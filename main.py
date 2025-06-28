@@ -27,7 +27,7 @@ features = ['latitude', 'longitude', 'temperature', 'humidity',
 # Root endpoint
 @app.get("/")
 def root():
-    return {"message": "🔥 Nepal Forest Fire Risk API is live and ready!"}
+    return {"message": " Nepal Forest Fire Risk API is live and ready!"}
 
 # Health check
 @app.get("/health")

@@ -1,8 +1,10 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, BrowserRouter } from "react-router-dom";
+import 'leaflet/dist/leaflet.css';
 import Home from "./pages/Home";
 import Predict from "./pages/Predict";
 import HowItWorks from "./pages/HowItWorks";
 import Contact from "./pages/Contact";
+import FireWatchNepal from "./pages/fire-watch-nepal";
 
 export default function App() {
   return (
@@ -11,6 +13,7 @@ export default function App() {
         <div className="font-bold text-xl">Nepal Forest Fire Watch</div>
         <div className="space-x-4">
           <Link to="/" className="hover:underline">Home</Link>
+          <Link to="/fire-watch-nepal" className="hover:underline">Fire-Watch</Link>
           <Link to="/predict" className="hover:underline">Predict</Link>
           <Link to="/how-it-works" className="hover:underline">How It Works</Link>
           <Link to="/contact" className="hover:underline">Contact</Link>
@@ -20,6 +23,8 @@ export default function App() {
       <main className="max-w-5xl mx-auto">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/fire-watch-nepal" element={<FireWatchNepal />} />
           <Route path="/predict" element={<Predict />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/contact" element={<Contact />} />

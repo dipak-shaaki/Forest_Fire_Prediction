@@ -1,0 +1,30 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": { "name": "Province No. 1" },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[[88.2, 27.1], [88.2, 27.5], [88.6, 27.5], [88.6, 27.1], [88.2, 27.1]]]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": { "name": "Province No. 2" },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[[85.5, 26.5], [85.5, 27.0], [86.0, 27.0], [86.0, 26.5], [85.5, 26.5]]]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": { "name": "Bagmati Province" },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[[84.0, 27.4], [84.0, 28.0], [84.5, 28.0], [84.5, 27.4], [84.0, 27.4]]]
+        }
+      }
+    ]
+  }
+  
