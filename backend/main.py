@@ -3,19 +3,13 @@ from pydantic import BaseModel
 import joblib
 import pandas as pd
 import math
-import sys
-import os
-
-# Add backend directory to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'backend'))
-
 from utils.enrich import enrich_point
 
 app = FastAPI(title="Nepal Forest Fire Risk API")
 
 # Try to load model
 try:
-    model = joblib.load("./backend/model/catboost_final_model.pkl")
+    model = joblib.load("./model/catboost_final_model.pkl")
 except Exception as e:
     model = None
     print(f"[ERROR] Failed to load model: {e}")
@@ -27,7 +21,7 @@ features = ['latitude', 'longitude', 'temperature', 'humidity',
 # Root endpoint
 @app.get("/")
 def root():
-    return {"message": "🔥 Nepal Forest Fire Risk API is live and ready!"}
+    return {"message": " Nepal Forest Fire Risk API is live and ready!"}
 
 # Health check
 @app.get("/health")
@@ -99,4 +93,4 @@ def predict_manual(data: ManualInput):
     return {
         "fire_occurred": int(y_pred),
         "input": enriched
-    } 
+    }

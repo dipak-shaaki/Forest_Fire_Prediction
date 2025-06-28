@@ -7,7 +7,7 @@ import os
 # Ensure the backend folder is in the path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from main import app  # Now this works
+from backend.main import app  # Now this works
 
 client = TestClient(app)
 
