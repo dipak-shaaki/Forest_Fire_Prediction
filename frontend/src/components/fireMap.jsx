@@ -3,31 +3,35 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import fireIconUrl from '../assets/fire.png'; 
+import fireIconUrl from '../assets/fire.png';
 
 // Custom fire icon
 const fireIcon = new L.Icon({
   iconUrl: fireIconUrl,
-  iconSize: [25, 25],
+  iconSize: [15, 15],
   iconAnchor: [12, 12],
   popupAnchor: [0, -12],
 });
 
-const mockFireData = [
-  { id: 1, lat: 27.7, lng: 85.3, name: "Kathmandu Fire", date: "2025-06-10" },
-  { id: 2, lat: 28.2, lng: 84.0, name: "Pokhara Fire", date: "2025-06-15" },
-  { id: 3, lat: 26.7, lng: 87.3, name: "Jhapa Fire", date: "2025-06-12" },
-];
-
 export default function FireMap() {
   const center = [28.3949, 84.1240]; // Nepal center coordinates
   const [provinceGeoJson, setProvinceGeoJson] = useState(null);
+  const [fireData, setFireData] = useState([]);
 
+  // Load province boundaries
   useEffect(() => {
     fetch('/geojson/nepal-provinces.geojson')
       .then(res => res.json())
       .then(data => setProvinceGeoJson(data))
       .catch(err => console.error('Failed to load GeoJSON:', err));
+  }, []);
+
+  // Load live fire data from backend API (you can use FIRMS proxy or your server)
+  useEffect(() => {
+    fetch('https://your-api.onrender.com/fires') // Replace with actual Render backend URL
+      .then(res => res.json())
+      .then(data => setFireData(data.fires || []))
+      .catch(err => console.error('Failed to fetch fire data:', err));
   }, []);
 
   const onEachProvince = (feature, layer) => {
@@ -51,15 +55,20 @@ export default function FireMap() {
           />
         )}
 
-        {mockFireData.map(fire => (
+        {fireData.map((fire, index) => (
           <Marker
-            key={fire.id}
-            position={[fire.lat, fire.lng]}
+            key={index}
+            position={[fire.latitude, fire.longitude]}
             icon={fireIcon}
           >
             <Popup>
-              <strong>{fire.name}</strong><br />
-              Date: {fire.date}
+              <div className="text-sm leading-snug">
+                <strong>Fire Detected</strong><br />
+                Brightness: {fire.brightness}<br />
+                Confidence: {fire.confidence}<br />
+                Date: {fire.acq_date}<br />
+                Time: {fire.acq_time}
+              </div>
             </Popup>
           </Marker>
         ))}
