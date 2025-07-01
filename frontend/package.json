@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-leaflet/core": "^3.0.0",
     "leaflet": "^1.9.4",
+    "path": "^0.12.7",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-leaflet": "^5.0.0",
