@@ -1,8 +1,7 @@
-// src/components/Map.jsx
 import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 
-mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN'; 
+mapboxgl.accessToken = 'tokennnnnnn hallll'; 
 
 function Map() {
   const mapContainer = useRef(null);
@@ -20,7 +19,7 @@ function Map() {
 
     new mapboxgl.Marker({ color: 'red' })
       .setLngLat([84.02, 27.70])
-      .setPopup(new mapboxgl.Popup().setHTML("<b>🔥 Fire detected</b><br>27.70°N, 84.02°E"))
+      .setPopup(new mapboxgl.Popup().setHTML("<b> Fire detected</b><br>27.70°N, 84.02°E"))
       .addTo(map.current);
   }, []);
 
