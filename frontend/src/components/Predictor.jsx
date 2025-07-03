@@ -107,7 +107,7 @@ const Predictor = () => {
         <label>Elevation (m): <input name="elevation" value={params.elevation} onChange={handleInputChange} /></label><br />
         <label>VPD: <input name="vpd" value={params.vpd} onChange={handleInputChange} /></label><br />
 
-        <button onClick={handlePredict}>🔥 Predict Fire Risk</button>
+        <button onClick={handlePredict}> Predict Fire Risk</button>
       </div>
 
       {risk && <h3 style={{ color: 'red' }}>Fire Risk: {risk}</h3>}

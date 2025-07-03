@@ -1,21 +1,31 @@
 // src/pages/Predict.jsx
 import React, { useState } from 'react';
-import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
+import axios from 'axios';
+import { MapContainer, TileLayer, useMapEvents, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import './Predict.css'; // optional CSS for styling
 
-const LocationSelector = ({ onSelect }) => {
+const API_KEY = '5341c37b13eb4a2994bda9c8d710103a';
+
+function LocationMarker({ onSelect }) {
+  const [position, setPosition] = useState(null);
+
   useMapEvents({
     click(e) {
       const { lat, lng } = e.latlng;
+      setPosition(e.latlng);
       onSelect(lat, lng);
     },
   });
-  return null;
-};
 
-const Predict = () => {
-  const [location, setLocation] = useState({ lat: '', lon: '' });
+  return position === null ? null : (
+    <Marker position={position}>
+      <Popup>Selected Location</Popup>
+    </Marker>
+  );
+}
+
+function Predict() {
+  const [location, setLocation] = useState(null);
   const [params, setParams] = useState({
     temperature: '',
     humidity: '',
@@ -27,45 +37,41 @@ const Predict = () => {
   const [risk, setRisk] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const fetchEnvironmentalData = async (lat, lon) => {
+  const handleMapClick = async (lat, lon) => {
+    setLocation({ lat, lon });
+    setLoading(true);
     try {
-      // Weather API
-      const weatherRes = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=YOUR_OPENWEATHER_API_KEY`
-      );
-      const weather = await weatherRes.json();
-
-      // Elevation API (You can replace this with your own endpoint if needed)
-      const elevationRes = await fetch(
-        `https://api.opentopodata.org/v1/test-dataset?locations=${lat},${lon}`
-      );
-      const elevation = await elevationRes.json();
+      const weatherURL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+      const weatherRes = await axios.get(weatherURL);
+      const weather = weatherRes.data;
 
       const temp = weather.main.temp;
       const humidity = weather.main.humidity;
-      const windSpeed = weather.wind.speed;
-      const elev = elevation.results[0].elevation;
+      const wind = weather.wind.speed;
+      const precipitation = weather.rain?.['1h'] || 0;
 
-      // VPD (approximate)
+      const elevationRes = await axios.get(
+        `https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lon}`
+      );
+      const elevation = elevationRes.data.results[0].elevation;
+
       const svp = 0.6108 * Math.exp((17.27 * temp) / (temp + 237.3));
       const vpd = svp * (1 - humidity / 100);
 
-      setParams((prev) => ({
-        ...prev,
+      setParams({
         temperature: temp.toFixed(2),
         humidity: humidity.toFixed(2),
-        wind_speed: windSpeed.toFixed(2),
-        elevation: elev.toFixed(2),
+        wind_speed: wind.toFixed(2),
+        precipitation: precipitation.toFixed(2),
+        elevation: elevation.toFixed(2),
         vpd: vpd.toFixed(3),
-      }));
-    } catch (error) {
-      console.error('Data fetch error:', error);
+      });
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      alert('Failed to fetch data.');
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleLocationSelect = (lat, lon) => {
-    setLocation({ lat, lon });
-    fetchEnvironmentalData(lat, lon);
   };
 
   const handleInputChange = (e) => {
@@ -74,60 +80,80 @@ const Predict = () => {
   };
 
   const handlePredict = async () => {
-    setLoading(true);
+    if (!location) {
+      alert("Please select a location on the map.");
+      return;
+    }
+
     const payload = {
       latitude: parseFloat(location.lat),
       longitude: parseFloat(location.lon),
-      temperature: parseFloat(params.temperature),
-      humidity: parseFloat(params.humidity),
-      wind_speed: parseFloat(params.wind_speed),
-      precipitation: parseFloat(params.precipitation),
-      elevation: parseFloat(params.elevation),
-      vpd: parseFloat(params.vpd),
+      ...Object.fromEntries(
+        Object.entries(params).map(([k, v]) => [k, parseFloat(v)])
+      ),
     };
 
     try {
-      const response = await fetch('http://localhost:8000/api/predict/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      setRisk(data.risk);
-    } catch (error) {
-      console.error('Prediction failed:', error);
-    } finally {
-      setLoading(false);
+      const res = await axios.post('http://127.0.0.1:8000/predict-manual', payload);
+      const result = res.data;
+      setRisk(result.fire_occurred === 1 ? 'High' : 'Low');
+    } catch (err) {
+      console.error('Prediction failed:', err);
+      alert('Prediction request failed.');
     }
   };
 
   return (
-    <div className="predict-page">
-      <h2>🔥 Forest Fire Risk Prediction</h2>
+    <div style={{ padding: '20px' }}>
+      <h2>Wildfire Risk Prediction</h2>
 
       <MapContainer center={[28.3949, 84.1240]} zoom={7} style={{ height: '400px', width: '100%' }}>
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <LocationSelector onSelect={handleLocationSelect} />
+        <TileLayer
+          url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+          attribution='&copy; OpenStreetMap contributors'
+        />
+        <LocationMarker onSelect={handleMapClick} />
       </MapContainer>
 
-      <div className="form-section">
-        <h3>Location: {location.lat}, {location.lon}</h3>
+      {location && (
+        <div style={{ marginTop: '20px' }}>
+          <h3>Selected Location: ({location.lat.toFixed(4)}, {location.lon.toFixed(4)})</h3>
 
-        <label>Temperature (°C): <input name="temperature" value={params.temperature} onChange={handleInputChange} /></label>
-        <label>Humidity (%): <input name="humidity" value={params.humidity} onChange={handleInputChange} /></label>
-        <label>Wind Speed (m/s): <input name="wind_speed" value={params.wind_speed} onChange={handleInputChange} /></label>
-        <label>Precipitation (mm): <input name="precipitation" value={params.precipitation} onChange={handleInputChange} /></label>
-        <label>Elevation (m): <input name="elevation" value={params.elevation} onChange={handleInputChange} /></label>
-        <label>VPD: <input name="vpd" value={params.vpd} onChange={handleInputChange} /></label>
+          {loading ? (
+            <p>Loading data...</p>
+          ) : (
+            <div>
+              <h4>Weather & Environmental Parameters</h4>
+              {['temperature', 'humidity', 'wind_speed', 'precipitation', 'elevation', 'vpd'].map((key) => (
+                <div key={key}>
+                  <label style={{ marginRight: '10px' }}>
+                    {key.replace('_', ' ').toUpperCase()}:
+                  </label>
+                  <input
+                    type="number"
+                    step="any"
+                    name={key}
+                    value={params[key]}
+                    onChange={handleInputChange}
+                    style={{ marginBottom: '10px' }}
+                  />
+                </div>
+              ))}
+              <button onClick={handlePredict} style={{ marginTop: '10px' }}>
+                Predict Fire Risk
+              </button>
 
-        <button onClick={handlePredict} disabled={loading}>
-          {loading ? 'Predicting...' : 'Predict'}
-        </button>
-
-        {risk && <div className="result">🔥 Fire Risk: <strong>{risk}</strong></div>}
-      </div>
+              {risk && (
+                <p style={{ marginTop: '15px', color: risk === 'High' ? 'red' : 'green', fontWeight: 'bold' }}>
+                  Fire Risk: {risk}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default Predict;
