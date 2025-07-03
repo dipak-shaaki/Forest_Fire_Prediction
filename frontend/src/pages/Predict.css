@@ -1,0 +1,35 @@
+.predict-page {
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.form-section {
+  margin-top: 20px;
+}
+
+.form-section label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input {
+  margin-left: 10px;
+  width: 100px;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-weight: bold;
+  background-color: #f57c00;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.result {
+  margin-top: 20px;
+  font-size: 1.3em;
+  color: red;
+  font-weight: bold;
+}
