@@ -1,4 +1,4 @@
-// src/components/FireStats.jsx
+
 import React from 'react';
 
 function FireStats({ stats }) {

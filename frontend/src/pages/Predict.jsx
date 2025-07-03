@@ -1,15 +1,44 @@
 
-import React from 'react';
+import { React,useState, useEffect } from 'react';
 import Map from '../components/Map';
 import FireStats from '../components/FireStats';
-
+import { fetchFiresForNepal } from '../utils/FetchFires'; 
 function Prediction() {
-  // Mock fire data (replace with API data later)
-const fireStats = {
- dailyFires: 7,
- monthlyFires: 129,
- totalFires: 1489,
-};
+   const [fireStats, setFireStats] = useState({
+    dailyFires: 0,
+    monthlyFires: 0,
+    totalFires: 0
+  });
+
+useEffect(() => {
+  async function loadData() {
+    const fires = await fetchFiresForNepal();
+    console.log("FIRMS fires:", fires);
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    const daily = fires.filter(f => f.acq_date === todayStr);
+
+    const monthly = fires.filter(f => {
+      const fireDate = new Date(f.acq_date);
+      return (
+        fireDate.getMonth() === today.getMonth() &&
+        fireDate.getFullYear() === today.getFullYear()
+      );
+    });
+
+    setFireStats({
+      dailyFires: daily.length,
+      monthlyFires: monthly.length,
+      totalFires: fires.length,
+    });
+  }
+
+  loadData();
+}, []);
+
+
+
   return (
 
     <div className="p-6 max-w-6xl mx-auto">
@@ -20,7 +49,7 @@ const fireStats = {
 
      {/* 🔥 Fire Statistics Cards */}
       <FireStats stats={fireStats} />
-      
+
       {/* 🔥 Map Showing Fires */}
       <Map />
 
