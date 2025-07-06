@@ -89,7 +89,7 @@ const Predictor = () => {
 
   return (
     <div>
-      <h2>🌲 Forest Fire Risk Predictor</h2>
+      <h2>Forest Fire Risk Predictor</h2>
       <MapContainer center={[28.3949, 84.1240]} zoom={7} style={{ height: "400px", width: "100%" }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <WeatherMap onLocationSelect={handleLocationSelect} />

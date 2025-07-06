@@ -3,8 +3,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { MapContainer, TileLayer, useMapEvents, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import API_KEYS from '../config/apiKeys';
 
-const API_KEY = '5341c37b13eb4a2994bda9c8d710103a';
+const API_KEY = API_KEYS.OPEN_WEATHER_MAP;
 
 function LocationMarker({ onSelect }) {
   const [position, setPosition] = useState(null);
