@@ -1,4 +1,4 @@
-// src/pages/Predict.jsx
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { MapContainer, TileLayer, useMapEvents, Marker, Popup } from 'react-leaflet';

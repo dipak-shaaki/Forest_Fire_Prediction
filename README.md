@@ -55,3 +55,7 @@ requests
 joblib
 
 catboost (important!)
+
+
+https://firms.modaps.eosdis.nasa.gov/mapserver/wms-info/
+__for api key nasa hotspot live map

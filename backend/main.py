@@ -5,12 +5,16 @@ import joblib
 import pandas as pd
 import math
 from fastapi.middleware.cors import CORSMiddleware
+from routes import fire_routes
 
 app = FastAPI()
+
+app.include_router(fire_routes.router)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    # allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
