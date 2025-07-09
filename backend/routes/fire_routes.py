@@ -1,11 +1,13 @@
 
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 import requests
 import csv
 import io
 
 from services.fire_stats import (
     get_confidence_level_counts,
+    get_elevation_fire_counts,
     get_yearly_fire_counts,
     get_monthly_fire_counts,
   
@@ -41,3 +43,10 @@ def monthly_fire_counts():
 @router.get("/fires/confidence")
 def confidence():
     return get_confidence_level_counts()
+
+@router.get("/fires/elevation")
+def get_fire_counts_by_elevation():
+    try:
+        return get_elevation_fire_counts()
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})

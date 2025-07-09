@@ -41,3 +41,14 @@ def get_confidence_level_counts():
              .rename(columns={'index': 'confidence'}) \
              .to_dict(orient='records')
 
+
+def get_elevation_fire_counts():
+    df = load_fire_data()
+
+    bins = [0, 500, 1000, 2000, 3000, 4000, 9000]
+    labels = ["0-500m", "500-1000m", "1000-2000m", "2000-3000m", "3000-4000m", "4000m+"]
+
+    df['elevation_bin'] = pd.cut(df['elevation'], bins=bins, labels=labels, include_lowest=True)
+    result = df.groupby('elevation_bin').size().reset_index(name='count')
+
+    return result.to_dict(orient='records')

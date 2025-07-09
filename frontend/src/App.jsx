@@ -9,6 +9,7 @@ import Navbar from "./components/Navbar.";
 import LiveHotspotsMap from "./components/LiveHotspotsMap";
 import FireStatsPage from "./pages/FireStatsPage";
 
+
 export default function App() {
   return (
     <div className="min-h-screen bg-white">

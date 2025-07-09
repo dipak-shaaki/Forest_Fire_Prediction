@@ -24,6 +24,7 @@ export default function FireStatsPage() {
         <ConfidenceFireChart />
       </section>
 
+
     </div>
   );
 }

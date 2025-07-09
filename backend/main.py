@@ -67,7 +67,33 @@ def predict_manual(data: ManualInput):
     X = pd.DataFrame([enriched])
     y_pred = model.predict(X[features])[0]
 
+    # 🔍 Explanation logic (simple rule-based for now)
+    explanation = []
+    risk_level = "Low"
+
+    if data.temperature > 30:
+        explanation.append("High temperature increases fire risk.")
+    if data.humidity > 80:
+        explanation.append("High humidity suppresses fire spread.")
+    if data.wind_speed > 10:
+        explanation.append("High wind speed may escalate fire risk.")
+    if data.precipitation > 1:
+        explanation.append("Recent precipitation reduces ignition chances.")
+    if vpd is not None:
+        if vpd > 2:
+            explanation.append("High VPD indicates dryness and higher fire potential.")
+        else:
+            explanation.append("Low VPD suggests moist conditions, reducing risk.")
+
+    # Simple rule-based risk level (tune as needed)
+    if vpd and vpd > 2.5 and data.temperature > 30 and data.humidity < 40:
+        risk_level = "High"
+    elif vpd and vpd > 1.5:
+        risk_level = "Moderate"
+
     return {
         "fire_occurred": int(y_pred),
-        "input": enriched
+        "input": enriched,
+        "risk_level": risk_level,
+        "explanation": " ".join(explanation)
     }

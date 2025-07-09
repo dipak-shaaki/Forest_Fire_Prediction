@@ -16,3 +16,4 @@ export async function fetchConfidenceFires() {
   const res = await fetch("http://localhost:8000/fires/confidence");
   return res.json();
 }
+
