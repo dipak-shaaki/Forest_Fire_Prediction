@@ -6,6 +6,7 @@ import pandas as pd
 import math
 from fastapi.middleware.cors import CORSMiddleware
 from routes import fire_routes
+from fastapi import HTTPException
 
 app = FastAPI()
 
@@ -41,16 +42,17 @@ class ManualInput(BaseModel):
 
 @app.post("/predict-manual")
 def predict_manual(data: ManualInput):
-    if not model:
-        return {"error": "Model not loaded."}
+    if model is None:
+        raise HTTPException(status_code=500, detail="Model not loaded")
 
+    # ---------- compute VPD ----------
     try:
         vpd = round(
             (0.6108 * math.exp((17.27 * data.temperature) / (data.temperature + 237.3))) *
             (1 - data.humidity / 100),
             3
         )
-    except:
+    except Exception:
         vpd = None
 
     enriched = {
@@ -65,35 +67,45 @@ def predict_manual(data: ManualInput):
     }
 
     X = pd.DataFrame([enriched])
-    y_pred = model.predict(X[features])[0]
 
-    # 🔍 Explanation logic (simple rule-based for now)
+    # ---------- model prediction ----------
+    proba = model.predict_proba(X[features])[0][1]   # probability of fire (class 1)
+    fire_flag = int(proba >= 0.5)
+
+    # ---------- risk level purely from probability ----------
+    if proba >= 0.75:
+        risk_level = "High"
+    elif proba >= 0.40:
+        risk_level = "Moderate"
+    else:
+        risk_level = "Low"
+
+    # ---------- build human explanation (rule‑based text only) ----------
     explanation = []
-    risk_level = "Low"
 
     if data.temperature > 30:
-        explanation.append("High temperature increases fire risk.")
+        explanation.append("High temperature increases the likelihood of ignition.")
     if data.humidity > 80:
-        explanation.append("High humidity suppresses fire spread.")
+        explanation.append("High humidity helps suppress fire spread.")
     if data.wind_speed > 10:
-        explanation.append("High wind speed may escalate fire risk.")
-    if data.precipitation > 1:
-        explanation.append("Recent precipitation reduces ignition chances.")
+        explanation.append("Strong winds can fan flames and aid fire growth.")
+    if data.precipitation >= 20:
+        explanation.append("Heavy recent rainfall lowers ignition chances.")
     if vpd is not None:
-        if vpd > 2:
-            explanation.append("High VPD indicates dryness and higher fire potential.")
-        else:
-            explanation.append("Low VPD suggests moist conditions, reducing risk.")
+        explanation.append(f"VPD value of {vpd} indicates {'dry' if vpd > 1.5 else 'moist'} air conditions.")
 
-    # Simple rule-based risk level (tune as needed)
-    if vpd and vpd > 2.5 and data.temperature > 30 and data.humidity < 40:
-        risk_level = "High"
-    elif vpd and vpd > 1.5:
-        risk_level = "Moderate"
+    summary = {
+        "High": "Multiple dry‑and‑windy indicators suggest rapid ignition and spread.",
+        "Moderate": "Mixed factors: some dryness but also moderating influences.",
+        "Low": "Moist conditions or recent rain keep fire risk minimal."
+    }[risk_level]
+
+    explanation_text = summary + " " + " ".join(explanation)
 
     return {
-        "fire_occurred": int(y_pred),
+        "fire_occurred": fire_flag,             # 1 or 0
+        "probability": round(proba, 3),         # send to frontend if desired
+        "risk_level": risk_level,               # consistent with probability
         "input": enriched,
-        "risk_level": risk_level,
-        "explanation": " ".join(explanation)
+        "explanation": explanation_text
     }

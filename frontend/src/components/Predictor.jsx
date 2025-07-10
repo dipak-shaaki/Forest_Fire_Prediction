@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import ManualFirePrediction from './MannualFirePrediction';
 
 const WeatherMap = ({ onLocationSelect }) => {
   useMapEvents({
@@ -112,7 +113,11 @@ const Predictor = () => {
 
       {risk && <h3 style={{ color: 'red' }}>Fire Risk: {risk}</h3>}
     </div>
+      
   );
+  
 };
+
+  
 
 export default Predictor;

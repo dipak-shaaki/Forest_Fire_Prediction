@@ -8,6 +8,7 @@ import LiveFireMapPage from "./pages/LiveFireMapPage";
 import Navbar from "./components/Navbar.";
 import LiveHotspotsMap from "./components/LiveHotspotsMap";
 import FireStatsPage from "./pages/FireStatsPage";
+import ManualFirePrediction from "./components/MannualFirePrediction";
 
 
 export default function App() {
@@ -25,7 +26,8 @@ export default function App() {
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>
-      
+
+  
     </div>
   );
 }
