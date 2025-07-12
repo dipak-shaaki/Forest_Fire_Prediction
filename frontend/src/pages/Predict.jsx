@@ -11,8 +11,7 @@ import {
 import 'leaflet/dist/leaflet.css';
 import API_KEYS from '../config/apiKeys';
 
-/* ---------------------------------- */
-/* Helper: map click -> return lat/lon */
+/* ---------- helper: click -> lat/lon marker ---------- */
 function LocationMarker({ onSelect }) {
   const [position, setPosition] = useState(null);
   useMapEvents({
@@ -29,8 +28,7 @@ function LocationMarker({ onSelect }) {
   ) : null;
 }
 
-/* ---------------------------------- */
-/* Column‐field definitions            */
+/* ---------- field definitions ---------- */
 const fieldList = [
   { key: 'temperature',  label: 'Temperature (°C)' },
   { key: 'humidity',     label: 'Humidity (%)' },
@@ -42,17 +40,17 @@ const fieldList = [
 
 const WEATHER_KEY = API_KEYS.OPEN_WEATHER_MAP;
 
-/* ================================== */
-/* Main component                     */
+/* ====================================== */
+/* main component                         */
 export default function Predict() {
-  const [location, setLocation] = useState(null);
-  const [params, setParams]   = useState(Object.fromEntries(fieldList.map(f => [f.key, ''])));
+  const [location, setLocation]   = useState(null);
+  const [params,   setParams]     = useState(Object.fromEntries(fieldList.map(f => [f.key, ''])));
   const [loadingData, setLoadingData] = useState(false);
-  const [predicting, setPredicting]   = useState(false);
-  const [result, setResult] = useState(null);
-  const [error,  setError]  = useState('');
+  const [predicting,  setPredicting]  = useState(false);
+  const [result,      setResult]      = useState(null);
+  const [error,       setError]       = useState('');
 
-  /* ---------- fetch live data on map click ---------- */
+  /* -------- live fetch on map click -------- */
   const handleMapClick = async (lat, lon) => {
     setLocation({ lat, lon });
     setResult(null);
@@ -76,12 +74,12 @@ export default function Predict() {
       const vpd = svp * (1 - humidity / 100);
 
       setParams({
-        temperature:  temp.toFixed(2),
-        humidity:     humidity.toFixed(2),
-        wind_speed:   wind.toFixed(2),
-        precipitation:precip.toFixed(2),
-        elevation:    elevation.toFixed(2),
-        vpd:          vpd.toFixed(3),
+        temperature:   temp.toFixed(2),
+        humidity:      humidity.toFixed(2),
+        wind_speed:    wind.toFixed(2),
+        precipitation: precip.toFixed(2),
+        elevation:     elevation.toFixed(2),
+        vpd:           vpd.toFixed(3),
       });
     } catch (err) {
       console.error(err);
@@ -97,7 +95,7 @@ export default function Predict() {
     setParams(prev => ({ ...prev, [name]: value }));
   };
 
-  /* ---------- call prediction API ---------- */
+  /* ---------- prediction request ---------- */
   const handlePredict = async () => {
     if (!location) {
       setError('Select a location on the map first.');
@@ -122,6 +120,14 @@ export default function Predict() {
     }
   };
 
+  /* ---------- reset all to initial ---------- */
+  const resetAll = () => {
+    setLocation(null);
+    setParams(Object.fromEntries(fieldList.map(f => [f.key, ''])));
+    setResult(null);
+    setError('');
+  };
+
   /* ---------- render ---------- */
   return (
     <div style={{ padding: 20 }}>
@@ -140,10 +146,10 @@ export default function Predict() {
         <LocationMarker onSelect={handleMapClick} />
       </MapContainer>
 
-      {/* Two‑column panel */}
+      {/* two-column panel */}
       {location && (
         <div style={{ display: 'flex', gap: '2rem', marginTop: '2rem' }}>
-          {/* Manual form */}
+          {/* Manual panel */}
           <div style={{ flex: 1, minWidth: 280 }}>
             <h3>Manual Parameters</h3>
             {fieldList.map(({ key, label }) => (
@@ -172,7 +178,7 @@ export default function Predict() {
             </button>
           </div>
 
-          {/* Auto‑filled summary */}
+          {/* Auto summary */}
           <div style={{ flex: 1 }}>
             <h3>Auto‑filled Data from Map</h3>
             <p><strong>Location:</strong> {location.lat.toFixed(4)}, {location.lon.toFixed(4)}</p>
@@ -192,7 +198,7 @@ export default function Predict() {
         </div>
       )}
 
-      {/* Result */}
+      {/* result + reset button */}
       {result && (
         <div
           style={{
@@ -215,21 +221,36 @@ export default function Predict() {
               {result.risk_level}
             </span>
           </p>
-          <p><strong>Model output:</strong> {result.fire_occurred ? 'Fire Likely' : 'No Fire Expected'}</p>
+          <p><strong>Model probability:</strong> {result.probability}</p>
           <p style={{ marginTop: 8 }}><strong>Explanation:</strong> {result.explanation}</p>
+
+          {/* reset button */}
+          <button
+            onClick={resetAll}
+            style={{
+              marginTop: 16,
+              padding: '8px 14px',
+              background: '#444',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 4,
+              cursor: 'pointer'
+            }}
+          >
+            Predict another location
+          </button>
         </div>
       )}
 
       {error && <p style={{ marginTop: 16, color: 'red' }}>Error: {error}</p>}
 
-      {/* Overlay while predicting */}
+      {/* overlay spinner */}
       {predicting && (
         <div style={{
           position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           color: '#fff', zIndex: 9999
         }}>
-          {/* simple CSS spinner */}
           <div style={{
             width: 48, height: 48, border: '6px solid #fff',
             borderTopColor: 'transparent', borderRadius: '50%',

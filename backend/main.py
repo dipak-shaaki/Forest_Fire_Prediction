@@ -1,36 +1,54 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import pandas as pd
 import math
-from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+import os
+from fastapi_jwt_auth import AuthJWT
+
+load_dotenv()
+
+#routes
 from routes import fire_routes
-from fastapi import HTTPException
+from routes import admin_routes
+from routes import test_mongo
+from routes import auth_routes
 
 app = FastAPI()
 
-app.include_router(fire_routes.router)
-
+# Allow CORS for development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    # allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],  # or ["http://localhost:5173"] in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Load the model
+# Include additional route files
+app.include_router(fire_routes.router)
+app.include_router(admin_routes.router)
+app.include_router(test_mongo.router)  
+app.include_router(auth_routes.router)
+
+
+# Load model
 try:
     model = joblib.load("./model/catboost_final_model.pkl")
 except Exception as e:
     model = None
     print(f"[ERROR] Could not load model: {e}")
 
-features = ['latitude', 'longitude', 'temperature', 'humidity',
-            'wind_speed', 'precipitation', 'elevation', 'vpd']
+# Feature list expected by the model
+features = [
+    'latitude', 'longitude', 'temperature', 'humidity',
+    'wind_speed', 'precipitation', 'elevation', 'vpd'
+]
 
+# Schema for manual prediction input
 class ManualInput(BaseModel):
     latitude: float
     longitude: float
@@ -40,12 +58,20 @@ class ManualInput(BaseModel):
     precipitation: float
     elevation: float
 
+
+# ---- Root health check ----
+@app.get("/")
+async def root():
+    return {"message": "API is running!"}
+
+
+# Predict route
 @app.post("/predict-manual")
 def predict_manual(data: ManualInput):
     if model is None:
         raise HTTPException(status_code=500, detail="Model not loaded")
 
-    # ---------- compute VPD ----------
+    # Calculate VPD (Vapor Pressure Deficit)
     try:
         vpd = round(
             (0.6108 * math.exp((17.27 * data.temperature) / (data.temperature + 237.3))) *
@@ -66,13 +92,14 @@ def predict_manual(data: ManualInput):
         "vpd": vpd
     }
 
+    # DataFrame for prediction
     X = pd.DataFrame([enriched])
 
-    # ---------- model prediction ----------
-    proba = model.predict_proba(X[features])[0][1]   # probability of fire (class 1)
+    # Predict fire probability
+    proba = model.predict_proba(X[features])[0][1]
     fire_flag = int(proba >= 0.5)
 
-    # ---------- risk level purely from probability ----------
+    # Risk classification
     if proba >= 0.75:
         risk_level = "High"
     elif proba >= 0.40:
@@ -80,7 +107,15 @@ def predict_manual(data: ManualInput):
     else:
         risk_level = "Low"
 
-    # ---------- build human explanation (rule‑based text only) ----------
+    # Natural-language confidence level
+    confidence = (
+        "High confidence" if proba > 0.75 else
+        "Moderate confidence" if proba > 0.50 else
+        "Low confidence" if proba > 0.25 else
+        "Very low confidence"
+    )
+
+    # Explanation engine
     explanation = []
 
     if data.temperature > 30:
@@ -94,18 +129,32 @@ def predict_manual(data: ManualInput):
     if vpd is not None:
         explanation.append(f"VPD value of {vpd} indicates {'dry' if vpd > 1.5 else 'moist'} air conditions.")
 
+    # Summary headline
     summary = {
         "High": "Multiple dry‑and‑windy indicators suggest rapid ignition and spread.",
-        "Moderate": "Mixed factors: some dryness but also moderating influences.",
+        "Moderate": "Some dryness exists, but moderating influences are present.",
         "Low": "Moist conditions or recent rain keep fire risk minimal."
     }[risk_level]
 
-    explanation_text = summary + " " + " ".join(explanation)
+    # Final explanation sentence
+    explanation_text = (
+        f"{summary} " +
+        " ".join(explanation) +
+        f" Overall, the fire risk here is {risk_level.lower()}."
+    )
 
     return {
-        "fire_occurred": fire_flag,             # 1 or 0
-        "probability": round(proba, 3),         # send to frontend if desired
-        "risk_level": risk_level,               # consistent with probability
+        "fire_occurred": fire_flag,
+        "risk_level": risk_level,
+        "confidence": confidence,
         "input": enriched,
         "explanation": explanation_text
     }
+
+
+class Settings(BaseModel):
+    authjwt_secret_key: str = os.getenv("SECRET_KEY")
+
+@AuthJWT.load_config
+def get_config():
+    return Settings()
