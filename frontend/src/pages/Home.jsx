@@ -1,6 +1,9 @@
+import AlertBanner from "./AlertBanner";
+
 function Home() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
+       <AlertBanner />
       <h1 className="text-4xl font-bold mb-4 text-green-800">Welcome to ForestFire Watch Nepal 🌲🔥</h1>
       <p className="text-lg text-gray-700">
         This platform tracks and visualizes forest fire activity across Nepal using satellite data, weather overlays, and historical trends.

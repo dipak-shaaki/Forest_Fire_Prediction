@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import LiveHotspotsMap from '../components/LiveHotspotsMap';
+import AlertBanner from './AlertBanner';
 
 export default function LiveFireMapPage() {
   const [sensor, setSensor] = useState('MODIS_NRT');
@@ -7,6 +8,7 @@ export default function LiveFireMapPage() {
 
   return (
     <div>
+       <AlertBanner />
       <header>
         <h2>Live Fire Hotspots in Nepal</h2>
         <div>

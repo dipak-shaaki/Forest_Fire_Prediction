@@ -10,6 +10,8 @@ import {
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import API_KEYS from '../config/apiKeys';
+import AlertBanner from './AlertBanner';
+
 
 /* ---------- helper: click -> lat/lon marker ---------- */
 function LocationMarker({ onSelect }) {
@@ -130,7 +132,10 @@ export default function Predict() {
 
   /* ---------- render ---------- */
   return (
+
+    
     <div style={{ padding: 20 }}>
+       <AlertBanner />
       <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Wildfire Risk Prediction</h2>
 
       {/* Map */}
