@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import os
 from fastapi_jwt_auth import AuthJWT
 from routes import contact_routes
+from routes import fire_report_routes
 
 load_dotenv()
 
@@ -35,6 +36,7 @@ app.include_router(admin_routes.router)
 app.include_router(test_mongo.router)  
 app.include_router(auth_routes.router)
 app.include_router(contact_routes.router)
+app.include_router(fire_report_routes.router) 
 
 
 # Load model

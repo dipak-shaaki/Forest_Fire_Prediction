@@ -11,3 +11,4 @@ if not MONGO_URI:
 client = AsyncIOMotorClient(MONGO_URI)
 db = client["wildfire_db"]
 alerts_collection = db["fire_alerts"]
+fire_reports = db["fire_reports"]
