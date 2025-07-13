@@ -20,6 +20,7 @@ from routes import admin_routes
 from routes import test_mongo
 from routes import auth_routes
 
+
 app = FastAPI()
 
 # Allow CORS for development

@@ -13,3 +13,7 @@ class FireReport(BaseModel):
     lat: Optional[float] = None
     lon: Optional[float] = None
     status: Optional[str] = "new"
+    resolved: Optional[bool] = False
+
+class UpdateReportStatus(BaseModel):
+    resolved: bool

@@ -10,22 +10,21 @@ import {
 export default function AdminDashboard() {
   const [view, setView] = useState("alerts");
 
-  // 🔥 ALERT CRUD STATE
+  // Alerts
   const [alerts, setAlerts] = useState([]);
   const [newAlert, setNewAlert] = useState({ title: "", message: "" });
   const [editIndex, setEditIndex] = useState(null);
   const [editedAlert, setEditedAlert] = useState({});
 
-  // 📩 USER MESSAGE STATE
+  // Messages
   const [messages, setMessages] = useState([]);
   const [replyingId, setReplyingId] = useState(null);
   const [replySubject, setReplySubject] = useState("");
   const [replyBody, setReplyBody] = useState("");
 
-  // 🔍 FIRE REPORTS STATE
+  // Reports
   const [reports, setReports] = useState([]);
 
-  // 🚀 LOAD DATA ON MOUNT
   useEffect(() => {
     loadAlerts();
     loadMessages();
@@ -49,7 +48,7 @@ export default function AdminDashboard() {
       .then((res) => setReports(res.data))
       .catch(console.error);
 
-  // 🔧 ALERT CRUD HANDLERS
+  // Alert CRUD
   const handleCreate = async () => {
     if (!newAlert.title || !newAlert.message)
       return alert("All fields required");
@@ -97,7 +96,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // 📬 REPLY TO MESSAGES
+  // Reply to user messages
   const sendReply = async (email) => {
     if (!replySubject || !replyBody) return alert("Fill subject & body");
     try {
@@ -124,13 +123,26 @@ export default function AdminDashboard() {
     }
   };
 
-  // 🚪 LOGOUT
+  // Update report resolution status
+  const handleResolve = async (id, newStatus) => {
+    try {
+      await axios.put(`http://localhost:8000/reports/${id}/resolve`, {
+        resolved: newStatus,
+      });
+      setReports((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, resolved: newStatus } : r))
+      );
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update report status.");
+    }
+  };
+
+  // Logout
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     window.location.href = "/admin-login";
   };
-
-  // ============================== UI STARTS ==============================
 
   return (
     <div style={{ padding: "2rem" }}>
@@ -152,28 +164,52 @@ export default function AdminDashboard() {
         </button>
       </h2>
 
-      {/* ---------- Tab Selector ---------- */}
+      {/* View Tabs */}
       <div style={{ marginBottom: "1rem" }}>
-        {["alerts", "messages", "reports"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setView(tab)}
-            style={{
-              marginRight: 8,
-              padding: "6px 12px",
-              background: view === tab ? "#2563eb" : "#e5e7eb",
-              color: view === tab ? "#fff" : "#000",
-              border: "none",
-              borderRadius: 4,
-              cursor: "pointer",
-            }}
-          >
-            {tab === "alerts" ? "Alerts" : tab === "messages" ? "User Messages" : "Wildfire Reports"}
-          </button>
-        ))}
+        <button
+          onClick={() => setView("alerts")}
+          style={{
+            marginRight: 8,
+            padding: "6px 12px",
+            background: view === "alerts" ? "#2563eb" : "#e5e7eb",
+            color: view === "alerts" ? "#fff" : "#000",
+            border: "none",
+            borderRadius: 4,
+            cursor: "pointer",
+          }}
+        >
+          Alerts
+        </button>
+        <button
+          onClick={() => setView("messages")}
+          style={{
+            marginRight: 8,
+            padding: "6px 12px",
+            background: view === "messages" ? "#2563eb" : "#e5e7eb",
+            color: view === "messages" ? "#fff" : "#000",
+            border: "none",
+            borderRadius: 4,
+            cursor: "pointer",
+          }}
+        >
+          User Messages
+        </button>
+        <button
+          onClick={() => setView("reports")}
+          style={{
+            padding: "6px 12px",
+            background: view === "reports" ? "#2563eb" : "#e5e7eb",
+            color: view === "reports" ? "#fff" : "#000",
+            border: "none",
+            borderRadius: 4,
+            cursor: "pointer",
+          }}
+        >
+          Fire Reports
+        </button>
       </div>
 
-      {/* ====================================== ALERTS TAB ====================================== */}
+      {/* Alerts Panel */}
       {view === "alerts" && (
         <>
           <div style={{ marginBottom: "2rem" }}>
@@ -217,7 +253,10 @@ export default function AdminDashboard() {
                     <input
                       value={editedAlert.title}
                       onChange={(e) =>
-                        setEditedAlert({ ...editedAlert, title: e.target.value })
+                        setEditedAlert({
+                          ...editedAlert,
+                          title: e.target.value,
+                        })
                       }
                       style={{ marginBottom: 6 }}
                     />
@@ -250,7 +289,7 @@ export default function AdminDashboard() {
         </>
       )}
 
-      {/* =================================== USER MESSAGES TAB =================================== */}
+      {/* User Messages Panel */}
       {view === "messages" && (
         <>
           <h3>User Messages</h3>
@@ -290,7 +329,9 @@ export default function AdminDashboard() {
                       onChange={(e) => setReplyBody(e.target.value)}
                       style={{ width: "100%", height: 100, marginBottom: 6 }}
                     />
-                    <button onClick={() => sendReply(msg.email)}>Send Reply</button>{" "}
+                    <button onClick={() => sendReply(msg.email)}>
+                      Send Reply
+                    </button>{" "}
                     <button onClick={() => setReplyingId(null)}>Cancel</button>
                   </div>
                 ) : (
@@ -302,7 +343,7 @@ export default function AdminDashboard() {
         </>
       )}
 
-      {/* =================================== FIRE REPORTS TAB =================================== */}
+      {/* Fire Reports Panel */}
       {view === "reports" && (
         <>
           <h3>Submitted Wildfire Reports</h3>
@@ -317,7 +358,8 @@ export default function AdminDashboard() {
                     border: "1px solid #ccc",
                     padding: "10px",
                     marginBottom: "10px",
-                    backgroundColor: "#fff7ed",
+                    backgroundColor: r.resolved ? "#e5e7eb" : "#fff7ed",
+                    opacity: r.resolved ? 0.6 : 1,
                   }}
                 >
                   <strong>{r.name}</strong> reported on{" "}
@@ -331,6 +373,31 @@ export default function AdminDashboard() {
                   <strong>Location:</strong> {r.location_details}
                   <br />
                   <strong>Description:</strong> {r.description}
+                  <br />
+                  <strong>Status:</strong>{" "}
+                  <span
+                    style={{
+                      color: r.resolved ? "green" : "red",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {r.resolved ? "Resolved" : "Pending"}
+                  </span>
+                  <br />
+                  <button
+                    onClick={() => handleResolve(r.id, !r.resolved)}
+                    style={{
+                      marginTop: 6,
+                      backgroundColor: r.resolved ? "#d97706" : "#10b981",
+                      color: "#fff",
+                      border: "none",
+                      padding: "6px 10px",
+                      borderRadius: 4,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {r.resolved ? "Mark Unresolved" : "Mark Resolved"}
+                  </button>
                 </li>
               ))}
             </ul>

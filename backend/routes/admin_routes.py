@@ -8,6 +8,9 @@ import smtplib
 import os
 from email.mime.text import MIMEText
 from pydantic import BaseModel, EmailStr
+from models.fire_report import UpdateReportStatus
+from database.mongo import db
+
 
 
 router = APIRouter(prefix="/admin", tags=["Admin Alerts"])
@@ -19,6 +22,7 @@ def serialize_alert(alert):
 
 def admin_required(Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()   # raises 401 if no/invalid token
+
 
 
 @router.post("/alerts")
@@ -82,3 +86,18 @@ def send_reply_email(payload: EmailReply):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
+
+
+# Admin routes for managing fire reports
+report_collection = db["fire_reports"]
+router = APIRouter(tags=["Admin Reports"])
+
+@router.put("/reports/{report_id}/resolve")
+async def mark_report_resolved(report_id: str, status: UpdateReportStatus):
+    result = await report_collection.update_one(
+        {"_id": ObjectId(report_id)},
+        {"$set": {"resolved": status.resolved}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(404, detail="Report not found or unchanged.")
+    return {"message": "Report status updated"}
