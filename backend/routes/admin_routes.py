@@ -1,10 +1,14 @@
 from fastapi import APIRouter, HTTPException
 from fastapi import Depends
 from fastapi_jwt_auth import AuthJWT
-
 from models.alert_model import FireAlert, UpdateAlert
 from database.mongo import alerts_collection
 from bson import ObjectId
+import smtplib
+import os
+from email.mime.text import MIMEText
+from pydantic import BaseModel, EmailStr
+
 
 router = APIRouter(prefix="/admin", tags=["Admin Alerts"])
 
@@ -51,3 +55,30 @@ async def delete_alert(alert_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Alert not found")
     return {"message": "Alert deleted"}
+
+
+class EmailReply(BaseModel):
+    to_email: EmailStr
+    subject: str
+    message: str
+
+# This endpoint allows admins to send replies to alerts via email
+@router.post("/reply")
+def send_reply_email(payload: EmailReply):
+    sender = os.getenv("SMTP_SENDER")
+    password = os.getenv("SMTP_PASSWORD")
+
+    try:
+        msg = MIMEText(payload.message)
+        msg['Subject'] = payload.subject
+        msg['From'] = sender
+        msg['To'] = payload.to_email
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender, password)
+            server.send_message(msg)
+
+        return {"msg": "Reply sent successfully"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")

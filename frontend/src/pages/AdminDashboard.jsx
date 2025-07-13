@@ -8,28 +8,31 @@ import {
 } from "../config/adminApi";
 
 export default function AdminDashboard() {
-  /* ---------------- state ---------------- */
-  const [view, setView] = useState("alerts"); // 'alerts' | 'messages'
+  /* ========== VIEW STATE:  alerts | messages ========== */
+  const [view, setView] = useState("alerts");
 
-  // alerts
+  /* ---------- alert state ---------- */
   const [alerts, setAlerts] = useState([]);
   const [newAlert, setNewAlert] = useState({ title: "", message: "" });
   const [editIndex, setEditIndex] = useState(null);
   const [editedAlert, setEditedAlert] = useState({});
 
-  // user messages
+  /* ---------- user message state ---------- */
   const [messages, setMessages] = useState([]);
+  const [replyingId, setReplyingId] = useState(null);
+  const [replySubject, setReplySubject] = useState("");
+  const [replyBody, setReplyBody] = useState("");
 
-  const token = localStorage.getItem("adminToken");
-
-  /* ---------------- load on mount ---------------- */
+  /* ========== LOAD DATA ON MOUNT ========== */
   useEffect(() => {
     loadAlerts();
     loadMessages();
   }, []);
 
   const loadAlerts = () =>
-    fetchAlerts().then((res) => setAlerts(res.data)).catch(console.error);
+    fetchAlerts()
+      .then((res) => setAlerts(res.data))
+      .catch(console.error);
 
   const loadMessages = () =>
     axios
@@ -37,17 +40,16 @@ export default function AdminDashboard() {
       .then((res) => setMessages(res.data))
       .catch(console.error);
 
-  /* ---------------- alert CRUD handlers ---------------- */
+  /* ========== ALERT CRUD ========== */
   const handleCreate = async () => {
     if (!newAlert.title || !newAlert.message)
       return alert("All fields required");
     try {
-      const res = await createAlert(newAlert); // token added via interceptor
+      const res = await createAlert(newAlert);
       setAlerts([...alerts, res.data]);
       setNewAlert({ title: "", message: "" });
-    } catch (err) {
-      console.error("Create failed:", err);
-      alert("Create failed.");
+    } catch {
+      alert("Create failed");
     }
   };
 
@@ -56,9 +58,8 @@ export default function AdminDashboard() {
     try {
       await deleteAlert(id);
       setAlerts(alerts.filter((a) => a.id !== id));
-    } catch (err) {
-      console.error("Delete failed:", err);
-      alert("Delete failed.");
+    } catch {
+      alert("Delete failed");
     }
   };
 
@@ -80,19 +81,45 @@ export default function AdminDashboard() {
       updated[editIndex] = res.data;
       setAlerts(updated);
       cancelEdit();
-    } catch (err) {
-      console.error("Update failed:", err);
-      alert("Update failed.");
+    } catch {
+      alert("Update failed");
     }
   };
 
-  /* ---------------- logout ---------------- */
+  /* ========== REPLY TO USER MESSAGE ========== */
+  const sendReply = async (email) => {
+    if (!replySubject || !replyBody) return alert("Fill subject & body");
+    try {
+      await axios.post(
+        "http://localhost:8000/admin/reply",
+        {
+          to_email: email,
+          subject: replySubject,
+          message: replyBody,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        }
+      );
+      alert("Reply sent");
+      setReplyingId(null);
+      setReplySubject("");
+      setReplyBody("");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send reply");
+    }
+  };
+
+  /* ========== LOGOUT ========== */
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     window.location.href = "/admin-login";
   };
 
-  /* ---------------- UI ---------------- */
+  /* ========== UI ========== */
   return (
     <div style={{ padding: "2rem" }}>
       <h2 style={{ fontWeight: "bold" }}>
@@ -113,7 +140,7 @@ export default function AdminDashboard() {
         </button>
       </h2>
 
-      {/* simple tab selector */}
+      {/* ----- tab selector ----- */}
       <div style={{ marginBottom: "1rem" }}>
         <button
           onClick={() => setView("alerts")}
@@ -144,14 +171,13 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      {/* ============ ALERTS PANEL ============ */}
+      {/* ======================================== ALERTS ======================================== */}
       {view === "alerts" && (
         <>
-          {/* create */}
+          {/* ---- create alert ---- */}
           <div style={{ marginBottom: "2rem" }}>
             <h4>Create New Alert</h4>
             <input
-              type="text"
               placeholder="Title"
               value={newAlert.title}
               onChange={(e) =>
@@ -160,7 +186,6 @@ export default function AdminDashboard() {
               style={{ marginRight: 10 }}
             />
             <input
-              type="text"
               placeholder="Message"
               value={newAlert.message}
               onChange={(e) =>
@@ -173,7 +198,7 @@ export default function AdminDashboard() {
 
           <hr />
 
-          {/* list */}
+          {/* ---- list alerts ---- */}
           <h3>Existing Alerts</h3>
           {alerts.length === 0 ? (
             <p>No alerts yet.</p>
@@ -193,10 +218,7 @@ export default function AdminDashboard() {
                     <input
                       value={editedAlert.title}
                       onChange={(e) =>
-                        setEditedAlert({
-                          ...editedAlert,
-                          title: e.target.value,
-                        })
+                        setEditedAlert({ ...editedAlert, title: e.target.value })
                       }
                       style={{ marginBottom: 6 }}
                     />
@@ -220,9 +242,7 @@ export default function AdminDashboard() {
                     <strong>{alert.title}</strong>
                     <p>{alert.message}</p>
                     <button onClick={() => startEdit(i)}>Edit</button>{" "}
-                    <button onClick={() => handleDelete(alert.id)}>
-                      Delete
-                    </button>
+                    <button onClick={() => handleDelete(alert.id)}>Delete</button>
                   </>
                 )}
               </div>
@@ -231,7 +251,7 @@ export default function AdminDashboard() {
         </>
       )}
 
-      {/* ============ MESSAGES PANEL ============ */}
+      {/* ===================================== USERMESSAGES =====================================*/}
       {view === "messages" && (
         <>
           <h3>User Messages</h3>
@@ -256,6 +276,29 @@ export default function AdminDashboard() {
                   <strong>Subject:</strong> {msg.subject}
                 </p>
                 <p>{msg.message}</p>
+
+                {replyingId === msg.id ? (
+                  <div style={{ marginTop: "0.5rem" }}>
+                    <input
+                      placeholder="Reply Subject"
+                      value={replySubject}
+                      onChange={(e) => setReplySubject(e.target.value)}
+                      style={{ width: "100%", marginBottom: 6 }}
+                    />
+                    <textarea
+                      placeholder="Reply Message"
+                      value={replyBody}
+                      onChange={(e) => setReplyBody(e.target.value)}
+                      style={{ width: "100%", height: 100, marginBottom: 6 }}
+                    />
+                    <button onClick={() => sendReply(msg.email)}>
+                      Send Reply
+                    </button>{" "}
+                    <button onClick={() => setReplyingId(null)}>Cancel</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setReplyingId(msg.id)}>Reply</button>
+                )}
               </div>
             ))
           )}
