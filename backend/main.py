@@ -11,6 +11,7 @@ from fastapi_jwt_auth import AuthJWT
 from routes import contact_routes
 from routes import fire_report_routes
 
+
 load_dotenv()
 
 #routes

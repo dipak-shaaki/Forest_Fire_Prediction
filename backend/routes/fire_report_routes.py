@@ -75,3 +75,18 @@ async def delete_report(report_id: str):
     if res.deleted_count == 0:
         raise HTTPException(404, detail="Report not found")
     return {"message": "Report deleted"}
+
+
+
+# Helper function to serialize report data
+
+
+def serialize_report(report):
+    report["id"] = str(report["_id"])
+    del report["_id"]
+    return report
+
+@router.get("/reports")
+async def get_fire_reports():
+    reports = await fire_reports.find().to_list(100)
+    return [serialize_report(r) for r in reports]

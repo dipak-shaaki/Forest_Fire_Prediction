@@ -8,25 +8,28 @@ import {
 } from "../config/adminApi";
 
 export default function AdminDashboard() {
-  /* ========== VIEW STATE:  alerts | messages ========== */
   const [view, setView] = useState("alerts");
 
-  /* ---------- alert state ---------- */
+  // 🔥 ALERT CRUD STATE
   const [alerts, setAlerts] = useState([]);
   const [newAlert, setNewAlert] = useState({ title: "", message: "" });
   const [editIndex, setEditIndex] = useState(null);
   const [editedAlert, setEditedAlert] = useState({});
 
-  /* ---------- user message state ---------- */
+  // 📩 USER MESSAGE STATE
   const [messages, setMessages] = useState([]);
   const [replyingId, setReplyingId] = useState(null);
   const [replySubject, setReplySubject] = useState("");
   const [replyBody, setReplyBody] = useState("");
 
-  /* ========== LOAD DATA ON MOUNT ========== */
+  // 🔍 FIRE REPORTS STATE
+  const [reports, setReports] = useState([]);
+
+  // 🚀 LOAD DATA ON MOUNT
   useEffect(() => {
     loadAlerts();
     loadMessages();
+    loadReports();
   }, []);
 
   const loadAlerts = () =>
@@ -40,7 +43,13 @@ export default function AdminDashboard() {
       .then((res) => setMessages(res.data))
       .catch(console.error);
 
-  /* ========== ALERT CRUD ========== */
+  const loadReports = () =>
+    axios
+      .get("http://localhost:8000/reports")
+      .then((res) => setReports(res.data))
+      .catch(console.error);
+
+  // 🔧 ALERT CRUD HANDLERS
   const handleCreate = async () => {
     if (!newAlert.title || !newAlert.message)
       return alert("All fields required");
@@ -67,10 +76,12 @@ export default function AdminDashboard() {
     setEditIndex(i);
     setEditedAlert({ ...alerts[i] });
   };
+
   const cancelEdit = () => {
     setEditIndex(null);
     setEditedAlert({});
   };
+
   const saveEdit = async (id) => {
     try {
       const res = await updateAlert(id, {
@@ -86,7 +97,7 @@ export default function AdminDashboard() {
     }
   };
 
-  /* ========== REPLY TO USER MESSAGE ========== */
+  // 📬 REPLY TO MESSAGES
   const sendReply = async (email) => {
     if (!replySubject || !replyBody) return alert("Fill subject & body");
     try {
@@ -113,13 +124,14 @@ export default function AdminDashboard() {
     }
   };
 
-  /* ========== LOGOUT ========== */
+  // 🚪 LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     window.location.href = "/admin-login";
   };
 
-  /* ========== UI ========== */
+  // ============================== UI STARTS ==============================
+
   return (
     <div style={{ padding: "2rem" }}>
       <h2 style={{ fontWeight: "bold" }}>
@@ -140,41 +152,30 @@ export default function AdminDashboard() {
         </button>
       </h2>
 
-      {/* ----- tab selector ----- */}
+      {/* ---------- Tab Selector ---------- */}
       <div style={{ marginBottom: "1rem" }}>
-        <button
-          onClick={() => setView("alerts")}
-          style={{
-            marginRight: 8,
-            padding: "6px 12px",
-            background: view === "alerts" ? "#2563eb" : "#e5e7eb",
-            color: view === "alerts" ? "#fff" : "#000",
-            border: "none",
-            borderRadius: 4,
-            cursor: "pointer",
-          }}
-        >
-          Alerts
-        </button>
-        <button
-          onClick={() => setView("messages")}
-          style={{
-            padding: "6px 12px",
-            background: view === "messages" ? "#2563eb" : "#e5e7eb",
-            color: view === "messages" ? "#fff" : "#000",
-            border: "none",
-            borderRadius: 4,
-            cursor: "pointer",
-          }}
-        >
-          User Messages
-        </button>
+        {["alerts", "messages", "reports"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setView(tab)}
+            style={{
+              marginRight: 8,
+              padding: "6px 12px",
+              background: view === tab ? "#2563eb" : "#e5e7eb",
+              color: view === tab ? "#fff" : "#000",
+              border: "none",
+              borderRadius: 4,
+              cursor: "pointer",
+            }}
+          >
+            {tab === "alerts" ? "Alerts" : tab === "messages" ? "User Messages" : "Wildfire Reports"}
+          </button>
+        ))}
       </div>
 
-      {/* ======================================== ALERTS ======================================== */}
+      {/* ====================================== ALERTS TAB ====================================== */}
       {view === "alerts" && (
         <>
-          {/* ---- create alert ---- */}
           <div style={{ marginBottom: "2rem" }}>
             <h4>Create New Alert</h4>
             <input
@@ -197,8 +198,6 @@ export default function AdminDashboard() {
           </div>
 
           <hr />
-
-          {/* ---- list alerts ---- */}
           <h3>Existing Alerts</h3>
           {alerts.length === 0 ? (
             <p>No alerts yet.</p>
@@ -251,7 +250,7 @@ export default function AdminDashboard() {
         </>
       )}
 
-      {/* ===================================== USERMESSAGES =====================================*/}
+      {/* =================================== USER MESSAGES TAB =================================== */}
       {view === "messages" && (
         <>
           <h3>User Messages</h3>
@@ -291,9 +290,7 @@ export default function AdminDashboard() {
                       onChange={(e) => setReplyBody(e.target.value)}
                       style={{ width: "100%", height: 100, marginBottom: 6 }}
                     />
-                    <button onClick={() => sendReply(msg.email)}>
-                      Send Reply
-                    </button>{" "}
+                    <button onClick={() => sendReply(msg.email)}>Send Reply</button>{" "}
                     <button onClick={() => setReplyingId(null)}>Cancel</button>
                   </div>
                 ) : (
@@ -301,6 +298,42 @@ export default function AdminDashboard() {
                 )}
               </div>
             ))
+          )}
+        </>
+      )}
+
+      {/* =================================== FIRE REPORTS TAB =================================== */}
+      {view === "reports" && (
+        <>
+          <h3>Submitted Wildfire Reports</h3>
+          {reports.length === 0 ? (
+            <p>No reports submitted yet.</p>
+          ) : (
+            <ul>
+              {reports.map((r) => (
+                <li
+                  key={r.id}
+                  style={{
+                    border: "1px solid #ccc",
+                    padding: "10px",
+                    marginBottom: "10px",
+                    backgroundColor: "#fff7ed",
+                  }}
+                >
+                  <strong>{r.name}</strong> reported on{" "}
+                  <strong>{r.fire_date}</strong>
+                  <br />
+                  <strong>Email:</strong> {r.email}
+                  <br />
+                  <strong>Province:</strong> {r.province},{" "}
+                  <strong>District:</strong> {r.district}
+                  <br />
+                  <strong>Location:</strong> {r.location_details}
+                  <br />
+                  <strong>Description:</strong> {r.description}
+                </li>
+              ))}
+            </ul>
           )}
         </>
       )}
