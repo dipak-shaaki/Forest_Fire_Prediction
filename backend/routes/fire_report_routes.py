@@ -1,7 +1,9 @@
-# routes/fire_report_routes.py
 import datetime
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from bson import ObjectId
+
+# Import your dependency (adjust the import path as needed)
+from auth.dependencies import approved_user_required  # <-- Make sure this path is correct
 
 from models.fire_report import FireReport
 from database.mongo import db          # << import db
@@ -90,3 +92,23 @@ def serialize_report(report):
 async def get_fire_reports():
     reports = await fire_reports.find().to_list(100)
     return [serialize_report(r) for r in reports]
+
+
+
+@router.post("/", response_model=dict, dependencies=[Depends(approved_user_required)])
+async def create_fire_report(
+    report: FireReport,
+    current_user = Depends(approved_user_required)
+):
+    data = report.dict()
+    if isinstance(data["fire_date"], datetime.date):
+        data["fire_date"] = datetime.datetime.combine(
+            data["fire_date"], datetime.time()
+        )
+
+    try:
+        result = await fire_reports.insert_one(data)
+        return {"message": "Fire report submitted", "id": str(result.inserted_id)}
+    except Exception as e:
+        print("🔥 Error inserting fire report:", e)
+        raise HTTPException(status_code=500, detail="Failed to submit fire report")

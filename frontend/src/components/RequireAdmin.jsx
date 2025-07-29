@@ -1,7 +1,13 @@
 
-import { Navigate } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function RequireAdmin({ children }) {
-  const token = localStorage.getItem('adminToken');
-  return token ? children : <Navigate to="/admin-login" />;
+  const { isAuthenticated, userRole } = useAuth();
+
+  if (!isAuthenticated || userRole !== 'admin') {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 }

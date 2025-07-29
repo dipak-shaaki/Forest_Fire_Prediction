@@ -1,0 +1,686 @@
+[
+    {
+        "name": "Taplejung Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Taplejung",
+        "location": {
+            "lat": 28.25638,
+            "lon": 85.11698
+        }
+    },
+    {
+        "name": "Sankhuwasabha Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Sankhuwasabha",
+        "location": {
+            "lat": 29.0009,
+            "lon": 83.62778
+        }
+    },
+    {
+        "name": "Solukhumbu Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Solukhumbu",
+        "location": {
+            "lat": 29.05225,
+            "lon": 88.06304
+        }
+    },
+    {
+        "name": "Bhojpur Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Bhojpur",
+        "location": {
+            "lat": 27.08084,
+            "lon": 80.61366
+        }
+    },
+    {
+        "name": "Dhankuta Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Dhankuta",
+        "location": {
+            "lat": 28.68786,
+            "lon": 85.24348
+        }
+    },
+    {
+        "name": "Terhathum Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Terhathum",
+        "location": {
+            "lat": 26.68463,
+            "lon": 83.74036
+        }
+    },
+    {
+        "name": "Panchthar Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Panchthar",
+        "location": {
+            "lat": 30.28687,
+            "lon": 82.80636
+        }
+    },
+    {
+        "name": "Ilam Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Ilam",
+        "location": {
+            "lat": 29.57575,
+            "lon": 83.73238
+        }
+    },
+    {
+        "name": "Jhapa Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Jhapa",
+        "location": {
+            "lat": 26.8404,
+            "lon": 85.31658
+        }
+    },
+    {
+        "name": "Morang Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Morang",
+        "location": {
+            "lat": 28.72926,
+            "lon": 82.26439
+        }
+    },
+    {
+        "name": "Sunsari Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Sunsari",
+        "location": {
+            "lat": 29.40556,
+            "lon": 83.11667
+        }
+    },
+    {
+        "name": "Okhaldhunga Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Okhaldhunga",
+        "location": {
+            "lat": 27.20255,
+            "lon": 84.73546
+        }
+    },
+    {
+        "name": "Khotang Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Khotang",
+        "location": {
+            "lat": 29.27236,
+            "lon": 81.58035
+        }
+    },
+    {
+        "name": "Udayapur Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Udayapur",
+        "location": {
+            "lat": 28.78553,
+            "lon": 87.66487
+        }
+    },
+    {
+        "name": "Saptari Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Saptari",
+        "location": {
+            "lat": 29.54061,
+            "lon": 83.90098
+        }
+    },
+    {
+        "name": "Siraha Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Siraha",
+        "location": {
+            "lat": 27.93938,
+            "lon": 88.19008
+        }
+    },
+    {
+        "name": "Dhanusa Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Dhanusa",
+        "location": {
+            "lat": 26.96291,
+            "lon": 80.66934
+        }
+    },
+    {
+        "name": "Mahottari Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Mahottari",
+        "location": {
+            "lat": 29.26174,
+            "lon": 83.55694
+        }
+    },
+    {
+        "name": "Sarlahi Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Sarlahi",
+        "location": {
+            "lat": 28.89688,
+            "lon": 80.81098
+        }
+    },
+    {
+        "name": "Sindhuli Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Sindhuli",
+        "location": {
+            "lat": 26.52777,
+            "lon": 86.39708
+        }
+    },
+    {
+        "name": "Ramechhap Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Ramechhap",
+        "location": {
+            "lat": 29.50209,
+            "lon": 87.30523
+        }
+    },
+    {
+        "name": "Dolakha Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Dolakha",
+        "location": {
+            "lat": 30.29564,
+            "lon": 87.06111
+        }
+    },
+    {
+        "name": "Bhaktapur Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Bhaktapur",
+        "location": {
+            "lat": 30.22959,
+            "lon": 80.5103
+        }
+    },
+    {
+        "name": "Dhading Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Dhading",
+        "location": {
+            "lat": 26.81921,
+            "lon": 86.38442
+        }
+    },
+    {
+        "name": "Kathmandu Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Kathmandu",
+        "location": {
+            "lat": 28.44403,
+            "lon": 85.66536
+        }
+    },
+    {
+        "name": "Kavrepalanchok Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Kavrepalanchok",
+        "location": {
+            "lat": 28.8952,
+            "lon": 86.55685
+        }
+    },
+    {
+        "name": "Lalitpur Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Lalitpur",
+        "location": {
+            "lat": 30.14453,
+            "lon": 82.96168
+        }
+    },
+    {
+        "name": "Nuwakot Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Nuwakot",
+        "location": {
+            "lat": 27.28198,
+            "lon": 82.30197
+        }
+    },
+    {
+        "name": "Rasuwa Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Rasuwa",
+        "location": {
+            "lat": 29.75162,
+            "lon": 84.25721
+        }
+    },
+    {
+        "name": "Sindhupalchok Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Sindhupalchok",
+        "location": {
+            "lat": 26.57137,
+            "lon": 87.85123
+        }
+    },
+    {
+        "name": "Bara Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Bara",
+        "location": {
+            "lat": 29.04633,
+            "lon": 83.25999
+        }
+    },
+    {
+        "name": "Parsa Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Parsa",
+        "location": {
+            "lat": 27.42845,
+            "lon": 86.63023
+        }
+    },
+    {
+        "name": "Rautahat Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Rautahat",
+        "location": {
+            "lat": 30.44361,
+            "lon": 81.57945
+        }
+    },
+    {
+        "name": "Chitwan Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Chitwan",
+        "location": {
+            "lat": 29.72988,
+            "lon": 84.031
+        }
+    },
+    {
+        "name": "Makwanpur Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Makwanpur",
+        "location": {
+            "lat": 27.93245,
+            "lon": 86.98331
+        }
+    },
+    {
+        "name": "Gorkha Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Gorkha",
+        "location": {
+            "lat": 26.52133,
+            "lon": 82.83641
+        }
+    },
+    {
+        "name": "Kaski Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Kaski",
+        "location": {
+            "lat": 26.55247,
+            "lon": 80.17272
+        }
+    },
+    {
+        "name": "Lamjung Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Lamjung",
+        "location": {
+            "lat": 26.70054,
+            "lon": 86.30191
+        }
+    },
+    {
+        "name": "Manang Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Manang",
+        "location": {
+            "lat": 26.75452,
+            "lon": 80.98591
+        }
+    },
+    {
+        "name": "Mustang Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Mustang",
+        "location": {
+            "lat": 30.03447,
+            "lon": 81.68131
+        }
+    },
+    {
+        "name": "Myagdi Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Myagdi",
+        "location": {
+            "lat": 26.7909,
+            "lon": 83.24919
+        }
+    },
+    {
+        "name": "Nawalpur Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Nawalpur",
+        "location": {
+            "lat": 28.78559,
+            "lon": 83.70047
+        }
+    },
+    {
+        "name": "Parbat Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Parbat",
+        "location": {
+            "lat": 28.18081,
+            "lon": 80.35439
+        }
+    },
+    {
+        "name": "Syangja Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Syangja",
+        "location": {
+            "lat": 28.40725,
+            "lon": 85.78486
+        }
+    },
+    {
+        "name": "Tanahun Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Tanahun",
+        "location": {
+            "lat": 27.42601,
+            "lon": 87.18584
+        }
+    },
+    {
+        "name": "Baglung Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Baglung",
+        "location": {
+            "lat": 30.14422,
+            "lon": 86.49158
+        }
+    },
+    {
+        "name": "Arghakhanchi Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Arghakhanchi",
+        "location": {
+            "lat": 27.57953,
+            "lon": 84.50281
+        }
+    },
+    {
+        "name": "Gulmi Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Gulmi",
+        "location": {
+            "lat": 30.42214,
+            "lon": 87.99827
+        }
+    },
+    {
+        "name": "Kapilvastu Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Kapilvastu",
+        "location": {
+            "lat": 28.60997,
+            "lon": 80.95023
+        }
+    },
+    {
+        "name": "Palpa Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Palpa",
+        "location": {
+            "lat": 26.40827,
+            "lon": 81.77232
+        }
+    },
+    {
+        "name": "Rupandehi Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Rupandehi",
+        "location": {
+            "lat": 28.29868,
+            "lon": 86.05268
+        }
+    },
+    {
+        "name": "Dang Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Dang",
+        "location": {
+            "lat": 26.40059,
+            "lon": 83.56878
+        }
+    },
+    {
+        "name": "Pyuthan Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Pyuthan",
+        "location": {
+            "lat": 28.31771,
+            "lon": 84.84902
+        }
+    },
+    {
+        "name": "Rolpa Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Rolpa",
+        "location": {
+            "lat": 29.06503,
+            "lon": 87.96297
+        }
+    },
+    {
+        "name": "Eastern Rukum Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Eastern Rukum",
+        "location": {
+            "lat": 27.42023,
+            "lon": 83.57744
+        }
+    },
+    {
+        "name": "Banke Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Banke",
+        "location": {
+            "lat": 30.08982,
+            "lon": 86.14951
+        }
+    },
+    {
+        "name": "Bardiya Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Bardiya",
+        "location": {
+            "lat": 28.93823,
+            "lon": 83.71949
+        }
+    },
+    {
+        "name": "Salyan Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Salyan",
+        "location": {
+            "lat": 30.17902,
+            "lon": 82.73574
+        }
+    },
+    {
+        "name": "Surkhet Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Surkhet",
+        "location": {
+            "lat": 29.30478,
+            "lon": 86.16964
+        }
+    },
+    {
+        "name": "Dailekh Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Dailekh",
+        "location": {
+            "lat": 29.19047,
+            "lon": 80.37988
+        }
+    },
+    {
+        "name": "Jajarkot Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Jajarkot",
+        "location": {
+            "lat": 29.56452,
+            "lon": 85.34787
+        }
+    },
+    {
+        "name": "Dolpa Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Dolpa",
+        "location": {
+            "lat": 28.62369,
+            "lon": 85.40516
+        }
+    },
+    {
+        "name": "Humla Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Humla",
+        "location": {
+            "lat": 29.51501,
+            "lon": 80.48462
+        }
+    },
+    {
+        "name": "Jumla Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Jumla",
+        "location": {
+            "lat": 27.78727,
+            "lon": 80.87118
+        }
+    },
+    {
+        "name": "Kalikot Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Kalikot",
+        "location": {
+            "lat": 27.56474,
+            "lon": 80.56034
+        }
+    },
+    {
+        "name": "Mugu Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Mugu",
+        "location": {
+            "lat": 27.45605,
+            "lon": 80.364
+        }
+    },
+    {
+        "name": "Western Rukum Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Western Rukum",
+        "location": {
+            "lat": 29.14434,
+            "lon": 80.79833
+        }
+    },
+    {
+        "name": "Achham Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Achham",
+        "location": {
+            "lat": 26.75774,
+            "lon": 87.04054
+        }
+    },
+    {
+        "name": "Baitadi Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Baitadi",
+        "location": {
+            "lat": 28.21326,
+            "lon": 87.66362
+        }
+    },
+    {
+        "name": "Bajhang Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Bajhang",
+        "location": {
+            "lat": 29.73595,
+            "lon": 87.08692
+        }
+    },
+    {
+        "name": "Bajura Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Bajura",
+        "location": {
+            "lat": 29.52246,
+            "lon": 84.89286
+        }
+    },
+    {
+        "name": "Dadeldhura Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Dadeldhura",
+        "location": {
+            "lat": 26.44108,
+            "lon": 83.33978
+        }
+    },
+    {
+        "name": "Darchula Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Darchula",
+        "location": {
+            "lat": 29.33005,
+            "lon": 82.35917
+        }
+    },
+    {
+        "name": "Doti Emergency Response Center",
+        "type": "Disaster Response Center",
+        "district": "Doti",
+        "location": {
+            "lat": 27.43819,
+            "lon": 86.35244
+        }
+    },
+    {
+        "name": "Kailali Emergency Response Center",
+        "type": "Fire Station",
+        "district": "Kailali",
+        "location": {
+            "lat": 27.11827,
+            "lon": 86.50075
+        }
+    },
+    {
+        "name": "Kanchanpur Emergency Response Center",
+        "type": "Forest Office",
+        "district": "Kanchanpur",
+        "location": {
+            "lat": 27.00318,
+            "lon": 85.88175
+        }
+    }
+]

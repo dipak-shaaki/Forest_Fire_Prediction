@@ -10,6 +10,9 @@ from email.mime.text import MIMEText
 from pydantic import BaseModel, EmailStr
 from models.fire_report import UpdateReportStatus
 from database.mongo import db
+from services.scan import scan_nepal_and_generate_alerts
+from auth.dependencies import admin_required
+from services.scan import scan_nepal_only
 
 
 
@@ -101,3 +104,49 @@ async def mark_report_resolved(report_id: str, status: UpdateReportStatus):
     if result.modified_count == 0:
         raise HTTPException(404, detail="Report not found or unchanged.")
     return {"message": "Report status updated"}
+
+@router.post("/admin/scan-nepal")
+def full_scan(user=Depends(admin_required)):
+    results = scan_nepal_and_generate_alerts()
+    return { "message": "Scan completed", "alerts": results }
+
+@router.post("/admin/approve-user/{email}")
+async def approve_user(email: str, admin = Depends(admin_required)):
+    res = await db["users"].update_one({"email": email}, {"$set": {"is_approved": True}})
+    if res.modified_count == 0:
+        return {"message": "No user found or already approved"}
+    return {"message": f" {email} approved"}
+
+# Endpoint: Run full Nepal scan and return high-risk districts (admin only)
+@router.post("/scan-nepal", dependencies=[Depends(admin_required)])
+async def scan_nepal():
+    high_risk = scan_nepal_only()
+    return {"high_risk_districts": high_risk}
+
+# Endpoint: Create alerts for selected districts (admin only)
+from models.alert_model import FireAlert
+
+class DistrictAlertRequest(BaseModel):
+    district: str
+    location: dict
+    risk: str
+    details: dict
+    reason: str
+
+@router.post("/alerts/bulk", dependencies=[Depends(admin_required)])
+async def create_bulk_alerts(alerts: list[DistrictAlertRequest]):
+    created = []
+    for alert in alerts:
+        alert_doc = FireAlert(
+            title=f"🔥 Fire Alert: {alert.district}",
+            message=alert.reason,
+            status="active"
+        ).dict()
+        alert_doc["district"] = alert.district
+        alert_doc["location"] = alert.location
+        alert_doc["risk"] = alert.risk
+        alert_doc["details"] = alert.details
+        result = await alerts_collection.insert_one(alert_doc)
+        alert_from_db = await alerts_collection.find_one({"_id": result.inserted_id})
+        created.append(serialize_alert(alert_from_db))
+    return {"created_alerts": created}

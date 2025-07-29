@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 import {
   fetchAlerts,
   createAlert,
@@ -8,6 +9,7 @@ import {
 } from "../config/adminApi";
 
 export default function AdminDashboard() {
+  const { logout } = useAuth();
   const [view, setView] = useState("alerts");
 
   // Alerts
@@ -24,6 +26,15 @@ export default function AdminDashboard() {
 
   // Reports
   const [reports, setReports] = useState([]);
+
+  // Fire Risk Scan State
+  const [scanLoading, setScanLoading] = useState(false);
+  const [highRiskDistricts, setHighRiskDistricts] = useState([]);
+  const [selectedDistricts, setSelectedDistricts] = useState([]);
+  const [alertReasons, setAlertReasons] = useState({});
+  const [scanError, setScanError] = useState("");
+  const [bulkAlertLoading, setBulkAlertLoading] = useState(false);
+  const [bulkAlertResult, setBulkAlertResult] = useState(null);
 
   useEffect(() => {
     loadAlerts();
@@ -138,10 +149,74 @@ export default function AdminDashboard() {
     }
   };
 
+  // Run full Nepal scan
+  const handleScan = async () => {
+    setScanLoading(true);
+    setScanError("");
+    setHighRiskDistricts([]);
+    setSelectedDistricts([]);
+    setAlertReasons({});
+    try {
+      const { data } = await axios.post(
+        "http://localhost:8000/admin/scan-nepal",
+        {},
+        { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+      );
+      setHighRiskDistricts(data.high_risk_districts || []);
+    } catch (err) {
+      setScanError("Scan failed. See console for details.");
+      console.error(err);
+    }
+    setScanLoading(false);
+  };
+
+  // Select/deselect districts
+  const toggleDistrict = (district) => {
+    setSelectedDistricts((prev) =>
+      prev.includes(district)
+        ? prev.filter((d) => d !== district)
+        : [...prev, district]
+    );
+  };
+
+  // Set reason for a district
+  const handleReasonChange = (district, reason) => {
+    setAlertReasons((prev) => ({ ...prev, [district]: reason }));
+  };
+
+  // Submit selected districts as alerts
+  const handleBulkAlert = async () => {
+    setBulkAlertLoading(true);
+    setBulkAlertResult(null);
+    const alerts = highRiskDistricts
+      .filter((d) => selectedDistricts.includes(d.district))
+      .map((d) => ({
+        district: d.district,
+        location: d.location,
+        risk: d.risk,
+        details: d.details,
+        reason: alertReasons[d.district] || "High fire risk detected."
+      }));
+    try {
+      const { data } = await axios.post(
+        "http://localhost:8000/admin/alerts/bulk",
+        alerts,
+        { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+      );
+      setBulkAlertResult(data.created_alerts);
+      setSelectedDistricts([]);
+      setAlertReasons({});
+      loadAlerts();
+    } catch (err) {
+      alert("Failed to create alerts. See console.");
+      console.error(err);
+    }
+    setBulkAlertLoading(false);
+  };
+
   // Logout
   const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    window.location.href = "/admin-login";
+    logout();
   };
 
   return (
@@ -207,6 +282,68 @@ export default function AdminDashboard() {
         >
           Fire Reports
         </button>
+      </div>
+
+      {/* Fire Risk Scan & Alert Creation */}
+      <div style={{ marginBottom: 32, padding: 16, border: "1px solid #ddd", borderRadius: 8 }}>
+        <h3>Full Nepal Fire Risk Scan</h3>
+        <button onClick={handleScan} disabled={scanLoading} style={{ padding: "8px 16px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", marginBottom: 12 }}>
+          {scanLoading ? "Scanning..." : "Run Full Scan"}
+        </button>
+        {scanError && <div style={{ color: "red" }}>{scanError}</div>}
+        {highRiskDistricts.length > 0 && (
+          <div>
+            <p>High-risk districts detected: Select which to alert and add reasons.</p>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>District</th>
+                  <th>Temp (°C)</th>
+                  <th>Humidity (%)</th>
+                  <th>Reason</th>
+                </tr>
+              </thead>
+              <tbody>
+                {highRiskDistricts.map((d) => (
+                  <tr key={d.district} style={{ borderBottom: "1px solid #eee" }}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedDistricts.includes(d.district)}
+                        onChange={() => toggleDistrict(d.district)}
+                      />
+                    </td>
+                    <td>{d.district}</td>
+                    <td>{d.details.temperature}</td>
+                    <td>{d.details.humidity}</td>
+                    <td>
+                      <input
+                        type="text"
+                        placeholder="Reason for alert"
+                        value={alertReasons[d.district] || ""}
+                        onChange={(e) => handleReasonChange(d.district, e.target.value)}
+                        style={{ width: 180 }}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <button
+              onClick={handleBulkAlert}
+              disabled={bulkAlertLoading || selectedDistricts.length === 0}
+              style={{ marginTop: 12, padding: "8px 16px", background: "#e11d48", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}
+            >
+              {bulkAlertLoading ? "Publishing..." : `Publish ${selectedDistricts.length} Alert(s)`}
+            </button>
+            {bulkAlertResult && (
+              <div style={{ color: "green", marginTop: 8 }}>
+                {bulkAlertResult.length} alert(s) published!
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Alerts Panel */}

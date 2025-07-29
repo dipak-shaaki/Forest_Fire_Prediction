@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import os
 from fastapi_jwt_auth import AuthJWT
 from routes import contact_routes, fire_report_routes, fire_routes, admin_routes, test_mongo, auth_routes
+from models.admin import ensure_admin_exists
 
 # --- NEW IMPORTS REQUIRED FOR CUSTOM RANDOM FOREST ---
 import numpy as np
@@ -75,6 +76,12 @@ async def root():
     return {"message": "API is running!"}
 
 
+
+@app.on_event("startup")
+async def init_app():
+    await ensure_admin_exists()
+
+    
 # Predict route
 @app.post("/predict-manual")
 def predict_manual(data: ManualInput):
