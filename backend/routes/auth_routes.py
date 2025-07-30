@@ -218,7 +218,7 @@ async def login_user(data: UserLoginRequest, Authorize: AuthJWT = Depends()):
         })
         
         return {"access_token": token, "role": user["role"]}
-        
+    
     except HTTPException:
         # Re-raise HTTP exceptions as-is
         raise

@@ -1,16 +1,12 @@
 import datetime
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from bson import ObjectId
 
-# Import your dependency (adjust the import path as needed)
-from auth.dependencies import approved_user_required  # <-- Make sure this path is correct
-
 from models.fire_report import FireReport
-from database.mongo import db          # << import db
-fire_reports = db["fire_reports"]      # collection handle
+from database.mongo import db
+fire_reports = db["fire_reports"]
 
 router = APIRouter(prefix="/reports", tags=["Fire Reports"])
-
 
 def serialize(doc):
     doc["id"] = str(doc["_id"])
@@ -55,13 +51,13 @@ async def get_report(report_id: str):
     return serialize(doc)
 
 # ------------------------------------------------------------------
-# UPDATE status   PUT /reports/{report_id}?status=resolved
+# UPDATE status   PUT /reports/{report_id}/resolve
 # ------------------------------------------------------------------
-@router.put("/{report_id}", response_model=dict)
-async def update_report_status(report_id: str, status: str):
+@router.put("/{report_id}/resolve", response_model=dict)
+async def update_report_status(report_id: str, status: dict):
     res = await fire_reports.update_one(
         {"_id": ObjectId(report_id)},
-        {"$set": {"status": status}}
+        {"$set": {"resolved": status.resolved}}
     )
     if res.modified_count == 0:
         raise HTTPException(400, detail="Nothing updated")
@@ -77,38 +73,3 @@ async def delete_report(report_id: str):
     if res.deleted_count == 0:
         raise HTTPException(404, detail="Report not found")
     return {"message": "Report deleted"}
-
-
-
-# Helper function to serialize report data
-
-
-def serialize_report(report):
-    report["id"] = str(report["_id"])
-    del report["_id"]
-    return report
-
-@router.get("/reports")
-async def get_fire_reports():
-    reports = await fire_reports.find().to_list(100)
-    return [serialize_report(r) for r in reports]
-
-
-
-@router.post("/", response_model=dict, dependencies=[Depends(approved_user_required)])
-async def create_fire_report(
-    report: FireReport,
-    current_user = Depends(approved_user_required)
-):
-    data = report.dict()
-    if isinstance(data["fire_date"], datetime.date):
-        data["fire_date"] = datetime.datetime.combine(
-            data["fire_date"], datetime.time()
-        )
-
-    try:
-        result = await fire_reports.insert_one(data)
-        return {"message": "Fire report submitted", "id": str(result.inserted_id)}
-    except Exception as e:
-        print("🔥 Error inserting fire report:", e)
-        raise HTTPException(status_code=500, detail="Failed to submit fire report")

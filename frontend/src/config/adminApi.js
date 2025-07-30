@@ -11,7 +11,7 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-export const fetchAlerts = () => API.get('/admin/alerts');
-export const createAlert = (data) => API.post('/admin/alerts', data);
-export const updateAlert = (id, data) => API.put(`/admin/alerts/${id}`, data);
-export const deleteAlert = (id) => API.delete(`/admin/alerts/${id}`);
+export const fetchAlerts = () => API.get('/alerts');
+export const createAlert = (data) => API.post('/alerts', data);
+export const updateAlert = (id, data) => API.put(`/alerts/${id}`, data);
+export const deleteAlert = (id) => API.delete(`/alerts/${id}`);

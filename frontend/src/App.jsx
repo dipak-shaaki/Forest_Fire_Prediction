@@ -20,11 +20,15 @@ import OTPVerification from "./pages/OTPVerification";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import SensorStackChart from "./pages/SensorStackChart";
+import ReportFire from "./pages/ReportFire";
+import NepalScan from "./pages/NepalScan";
+import AlertsManagement from "./pages/AlertsManagement";
+import Alerts from "./pages/Alerts";
 
 // Protected Route component to prevent logged-in users from accessing login
 const ProtectedLoginRoute = ({ children }) => {
     const { isAuthenticated, userRole } = useAuth();
-
+    
     if (isAuthenticated) {
         // Redirect to appropriate dashboard
         if (userRole === 'admin') {
@@ -33,7 +37,18 @@ const ProtectedLoginRoute = ({ children }) => {
             return <Navigate to="/user-dashboard" replace />;
         }
     }
+    
+    return children;
+};
 
+// Protected Route component for authenticated users only
+const RequireAuth = ({ children }) => {
+    const { isAuthenticated } = useAuth();
+    
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+    
     return children;
 };
 
@@ -60,6 +75,7 @@ function AppContent() {
                     <Route path="/verify-otp" element={<OTPVerification />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/report-fire" element={<RequireAuth><ReportFire /></RequireAuth>} />
 
                     {/* auth routes */}
                     <Route
@@ -71,6 +87,9 @@ function AppContent() {
                         }
                     />
                     <Route path="/sensor-stack-chart" element={<RequireAdmin><SensorStackChart /></RequireAdmin>} />
+                    <Route path="/nepal-scan" element={<RequireAdmin><NepalScan /></RequireAdmin>} />
+                    <Route path="/alerts-management" element={<RequireAdmin><AlertsManagement /></RequireAdmin>} />
+                    <Route path="/alerts" element={<Alerts />} />
                 </Routes>
             </main>
         </div>

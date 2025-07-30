@@ -158,7 +158,7 @@ export default function AdminDashboard() {
     setAlertReasons({});
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/admin/scan-nepal",
+        "http://localhost:8000/scan-nepal",
         {},
         { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
       );
@@ -191,15 +191,36 @@ export default function AdminDashboard() {
     const alerts = highRiskDistricts
       .filter((d) => selectedDistricts.includes(d.district))
       .map((d) => ({
+        title: `🔥 Forest Fire Alert: ${d.district}`,
+        message: `High forest fire risk detected in ${d.district} forest region.`,
         district: d.district,
-        location: d.location,
-        risk: d.risk,
-        details: d.details,
-        reason: alertReasons[d.district] || "High fire risk detected."
+        latitude: d.latitude,
+        longitude: d.longitude,
+        risk_level: d.fire_risk,
+        probability: d.probability,
+        weather_data: d.weather_data || d.details,
+        precautions: `🌲 FOREST FIRE ALERT: ${d.district} (${d.province}) - ${d.location_details}
+
+⚠️ CRITICAL PRECAUTIONS:
+• Avoid any open flames, smoking, or burning activities
+• Do not light campfires or use fireworks in forest areas
+• Report any smoke or fire immediately to emergency services
+• Stay away from forest areas during high-risk periods
+• Monitor local weather conditions and wind patterns
+• Follow evacuation orders if issued
+
+🚨 EMERGENCY CONTACTS:
+• Forest Department: 1001
+• Fire Brigade: 101
+• Police: 100
+
+This alert is based on current weather conditions including temperature, humidity, wind speed, and precipitation patterns that indicate high forest fire risk.`,
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+        reason: alertReasons[d.district] || "High forest fire risk detected based on weather conditions."
       }));
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/admin/alerts/bulk",
+        "http://localhost:8000/alerts/bulk",
         alerts,
         { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
       );
@@ -286,43 +307,72 @@ export default function AdminDashboard() {
 
       {/* Fire Risk Scan & Alert Creation */}
       <div style={{ marginBottom: 32, padding: 16, border: "1px solid #ddd", borderRadius: 8 }}>
-        <h3>Full Nepal Fire Risk Scan</h3>
-        <button onClick={handleScan} disabled={scanLoading} style={{ padding: "8px 16px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", marginBottom: 12 }}>
-          {scanLoading ? "Scanning..." : "Run Full Scan"}
-        </button>
+        <h3>Fire Risk Management</h3>
+        <div style={{ display: "flex", gap: "12px", marginBottom: "12px" }}>
+          <button onClick={handleScan} disabled={scanLoading} style={{ padding: "8px 16px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}>
+            {scanLoading ? "Scanning Forests..." : "🌲 Scan Nepal Forests"}
+          </button>
+          <a href="/alerts-management" style={{ padding: "8px 16px", background: "#f59e0b", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", textDecoration: "none" }}>
+            🚨 Manage Alerts
+          </a>
+          <a href="/alerts" style={{ padding: "8px 16px", background: "#10b981", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", textDecoration: "none" }}>
+            👁️ View Public Alerts
+          </a>
+        </div>
         {scanError && <div style={{ color: "red" }}>{scanError}</div>}
         {highRiskDistricts.length > 0 && (
           <div>
-            <p>High-risk districts detected: Select which to alert and add reasons.</p>
+            <p><strong>🌲 Forest Fire Risk Assessment Complete:</strong> High-risk forest areas detected. Select which forest regions to create alerts for and add specific reasons.</p>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr>
                   <th></th>
+                  <th>Forest Name</th>
                   <th>District</th>
+                  <th>Location</th>
                   <th>Temp (°C)</th>
                   <th>Humidity (%)</th>
+                  <th>Risk Level</th>
                   <th>Reason</th>
                 </tr>
               </thead>
               <tbody>
                 {highRiskDistricts.map((d) => (
-                  <tr key={d.district} style={{ borderBottom: "1px solid #eee" }}>
+                  <tr key={d.forest || d.district} style={{ borderBottom: "1px solid #eee" }}>
                     <td>
                       <input
                         type="checkbox"
-                        checked={selectedDistricts.includes(d.district)}
-                        onChange={() => toggleDistrict(d.district)}
+                        checked={selectedDistricts.includes(d.forest || d.district)}
+                        onChange={() => toggleDistrict(d.forest || d.district)}
                       />
                     </td>
-                    <td>{d.district}</td>
-                    <td>{d.details.temperature}</td>
-                    <td>{d.details.humidity}</td>
+                    <td><strong>{d.forest || d.district}</strong></td>
+                    <td><strong>{d.district}</strong></td>
+                    <td>
+                      <div style={{ fontSize: "12px" }}>
+                        <div><strong>{d.province}</strong></div>
+                        <div style={{ color: "#666" }}>{d.location_details}</div>
+                      </div>
+                    </td>
+                    <td>{d.weather_data?.temperature || d.details?.temperature}</td>
+                    <td>{d.weather_data?.humidity || d.details?.humidity}</td>
+                    <td>
+                      <span style={{
+                        padding: "2px 6px",
+                        borderRadius: "3px",
+                        fontSize: "12px",
+                        color: "white",
+                        backgroundColor: d.fire_risk === "High" ? "#dc2626" : d.fire_risk === "Moderate" ? "#f59e0b" : "#10b981"
+                      }}>
+                        {d.fire_risk}
+                      </span>
+                    </td>
                     <td>
                       <input
                         type="text"
                         placeholder="Reason for alert"
-                        value={alertReasons[d.district] || ""}
-                        onChange={(e) => handleReasonChange(d.district, e.target.value)}
+                        value={alertReasons[d.forest || d.district] || ""}
+                        onChange={(e) => handleReasonChange(d.forest || d.district, e.target.value)}
                         style={{ width: 180 }}
                       />
                     </td>
@@ -335,11 +385,11 @@ export default function AdminDashboard() {
               disabled={bulkAlertLoading || selectedDistricts.length === 0}
               style={{ marginTop: 12, padding: "8px 16px", background: "#e11d48", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}
             >
-              {bulkAlertLoading ? "Publishing..." : `Publish ${selectedDistricts.length} Alert(s)`}
+              {bulkAlertLoading ? "Publishing Forest Alerts..." : `🌲 Publish ${selectedDistricts.length} Forest Fire Alert(s)`}
             </button>
             {bulkAlertResult && (
               <div style={{ color: "green", marginTop: 8 }}>
-                {bulkAlertResult.length} alert(s) published!
+                🌲 {bulkAlertResult.length} forest fire alert(s) published successfully!
               </div>
             )}
           </div>
