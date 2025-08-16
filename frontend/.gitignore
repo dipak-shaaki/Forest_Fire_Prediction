@@ -25,6 +25,6 @@ dist-ssr
 
 
 # files
-config.js
-apiKeys.js
+# config.js
+# apiKeys.js
 .env
