@@ -61,14 +61,37 @@ export default function AdminDashboard() {
 
   // Alert CRUD
   const handleCreate = async () => {
-    if (!newAlert.title || !newAlert.message)
-      return alert("All fields required");
+    if (!newAlert.forest || !newAlert.district || !newAlert.message)
+      return alert("Forest name, district, and message are required");
+
+    // Create alert data with proper structure
+    const alertData = {
+      title: `🔥 Forest Fire Alert: ${newAlert.forest}`,
+      message: newAlert.message,
+      forest: newAlert.forest,
+      district: newAlert.district,
+      province: newAlert.province || "Unknown",
+      location_details: newAlert.location_details || "Nepal",
+      latitude: newAlert.latitude || 0,
+      longitude: newAlert.longitude || 0,
+      risk_level: newAlert.risk_level || "Moderate",
+      weather_data: {
+        temperature: newAlert.temperature || 25,
+        humidity: newAlert.humidity || 60,
+        wind_speed: 10,
+        precipitation: 0
+      },
+      duration_days: newAlert.duration_days || 3
+    };
+
     try {
-      const res = await createAlert(newAlert);
+      const res = await createAlert(alertData);
       setAlerts([...alerts, res.data]);
       setNewAlert({ title: "", message: "" });
-    } catch {
-      alert("Create failed");
+      alert("Forest fire alert created successfully!");
+    } catch (error) {
+      console.error("Create alert error:", error);
+      alert("Failed to create alert. Check console for details.");
     }
   };
 
@@ -352,6 +375,9 @@ This alert is based on current weather conditions including temperature, humidit
                       <div style={{ fontSize: "12px" }}>
                         <div><strong>{d.province}</strong></div>
                         <div style={{ color: "#666" }}>{d.location_details}</div>
+                        <div style={{ color: "#888", fontSize: "10px" }}>
+                          📍 {d.latitude?.toFixed(4)}, {d.longitude?.toFixed(4)}
+                        </div>
                       </div>
                     </td>
                     <td>{d.weather_data?.temperature || d.details?.temperature}</td>
@@ -400,24 +426,117 @@ This alert is based on current weather conditions including temperature, humidit
       {view === "alerts" && (
         <>
           <div style={{ marginBottom: "2rem" }}>
-            <h4>Create New Alert</h4>
-            <input
-              placeholder="Title"
-              value={newAlert.title}
-              onChange={(e) =>
-                setNewAlert({ ...newAlert, title: e.target.value })
-              }
-              style={{ marginRight: 10 }}
-            />
-            <input
-              placeholder="Message"
-              value={newAlert.message}
+            <h4>Create Manual Alert</h4>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
+              <input
+                placeholder="Forest Name (e.g., Chitwan National Park)"
+                value={newAlert.forest || ""}
+                onChange={(e) =>
+                  setNewAlert({ ...newAlert, forest: e.target.value })
+                }
+                style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ddd" }}
+              />
+              <input
+                placeholder="District (e.g., Chitwan)"
+                value={newAlert.district || ""}
+                onChange={(e) =>
+                  setNewAlert({ ...newAlert, district: e.target.value })
+                }
+                style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ddd" }}
+              />
+              <input
+                placeholder="Province (e.g., Bagmati)"
+                value={newAlert.province || ""}
+                onChange={(e) =>
+                  setNewAlert({ ...newAlert, province: e.target.value })
+                }
+                style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ddd" }}
+              />
+              <input
+                placeholder="Location Details"
+                value={newAlert.location_details || ""}
+                onChange={(e) =>
+                  setNewAlert({ ...newAlert, location_details: e.target.value })
+                }
+                style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ddd" }}
+              />
+              <input
+                type="number"
+                step="0.0001"
+                placeholder="Latitude"
+                value={newAlert.latitude || ""}
+                onChange={(e) =>
+                  setNewAlert({ ...newAlert, latitude: parseFloat(e.target.value) || 0 })
+                }
+                style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ddd" }}
+              />
+              <input
+                type="number"
+                step="0.0001"
+                placeholder="Longitude"
+                value={newAlert.longitude || ""}
+                onChange={(e) =>
+                  setNewAlert({ ...newAlert, longitude: parseFloat(e.target.value) || 0 })
+                }
+                style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ddd" }}
+              />
+              <input
+                type="number"
+                step="0.1"
+                placeholder="Temperature (°C)"
+                value={newAlert.temperature || ""}
+                onChange={(e) =>
+                  setNewAlert({ ...newAlert, temperature: parseFloat(e.target.value) || 0 })
+                }
+                style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ddd" }}
+              />
+              <input
+                type="number"
+                step="0.1"
+                placeholder="Humidity (%)"
+                value={newAlert.humidity || ""}
+                onChange={(e) =>
+                  setNewAlert({ ...newAlert, humidity: parseFloat(e.target.value) || 0 })
+                }
+                style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ddd" }}
+              />
+              <select
+                value={newAlert.risk_level || "Moderate"}
+                onChange={(e) =>
+                  setNewAlert({ ...newAlert, risk_level: e.target.value })
+                }
+                style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ddd" }}
+              >
+                <option value="Low">Low Risk</option>
+                <option value="Moderate">Moderate Risk</option>
+                <option value="High">High Risk</option>
+              </select>
+              <input
+                type="number"
+                min="1"
+                max="30"
+                placeholder="Duration (days)"
+                value={newAlert.duration_days || 3}
+                onChange={(e) =>
+                  setNewAlert({ ...newAlert, duration_days: parseInt(e.target.value) || 3 })
+                }
+                style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ddd" }}
+              />
+            </div>
+            <textarea
+              placeholder="Alert Message/Precautions (e.g., High fire risk due to dry conditions. Avoid open flames, report any smoke immediately.)"
+              value={newAlert.message || ""}
               onChange={(e) =>
                 setNewAlert({ ...newAlert, message: e.target.value })
               }
-              style={{ marginRight: 10 }}
+              style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ddd", minHeight: "80px" }}
             />
-            <button onClick={handleCreate}>Create Alert</button>
+            <button
+              onClick={handleCreate}
+              style={{ marginTop: "8px", padding: "8px 16px", background: "#dc2626", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+            >
+              🚨 Create Forest Fire Alert
+            </button>
           </div>
 
           <hr />
@@ -464,10 +583,52 @@ This alert is based on current weather conditions including temperature, humidit
                   </>
                 ) : (
                   <>
-                    <strong>{alert.title}</strong>
-                    <p>{alert.message}</p>
-                    <button onClick={() => startEdit(i)}>Edit</button>{" "}
-                    <button onClick={() => handleDelete(alert.id)}>Delete</button>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
+                      <div>
+                        <strong style={{ fontSize: "16px", color: "#dc2626" }}>{alert.title}</strong>
+                        <div style={{ fontSize: "12px", color: "#666", marginTop: "4px" }}>
+                          {alert.forest && <span>🌲 <strong>Forest:</strong> {alert.forest} | </span>}
+                          {alert.district && <span>📍 <strong>District:</strong> {alert.district} | </span>}
+                          {alert.province && <span>🏛️ <strong>Province:</strong> {alert.province} | </span>}
+                          {alert.risk_level && (
+                            <span style={{
+                              padding: "2px 6px",
+                              borderRadius: "3px",
+                              fontSize: "10px",
+                              color: "white",
+                              backgroundColor: alert.risk_level === "High" ? "#dc2626" : alert.risk_level === "Moderate" ? "#f59e0b" : "#10b981"
+                            }}>
+                              {alert.risk_level} Risk
+                            </span>
+                          )}
+                        </div>
+                        {alert.latitude && alert.longitude && (
+                          <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
+                            📍 Coordinates: {alert.latitude.toFixed(4)}, {alert.longitude.toFixed(4)}
+                          </div>
+                        )}
+                        {alert.weather_data && (
+                          <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
+                            🌡️ Temp: {alert.weather_data.temperature}°C | 💧 Humidity: {alert.weather_data.humidity}%
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <button
+                          onClick={() => startEdit(i)}
+                          style={{ padding: "4px 8px", background: "#2563eb", color: "white", border: "none", borderRadius: "3px", fontSize: "12px", marginRight: "4px" }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(alert.id)}
+                          style={{ padding: "4px 8px", background: "#dc2626", color: "white", border: "none", borderRadius: "3px", fontSize: "12px" }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                    <p style={{ marginTop: "8px", lineHeight: "1.4" }}>{alert.message}</p>
                   </>
                 )}
               </div>

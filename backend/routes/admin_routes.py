@@ -578,6 +578,7 @@ async def delete_alert(alert_id: str, user=Depends(admin_required)):
 async def create_bulk_alerts(alerts: List[dict], user=Depends(admin_required)):
     """Create multiple alerts at once"""
     try:
+        print(f"Received {len(alerts)} alerts for bulk creation")
         current_time = datetime.datetime.utcnow()
         
         for alert in alerts:
@@ -596,10 +597,13 @@ async def create_bulk_alerts(alerts: List[dict], user=Depends(admin_required)):
             alert["id"] = str(result.inserted_ids[i])
             created_alerts.append(alert)
         
+        print(f"Successfully created {len(created_alerts)} alerts")
         return {
             "message": f"Created {len(created_alerts)} alerts",
             "created_alerts": created_alerts
         }
     except Exception as e:
         print(f"Bulk alert creation error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(500, detail=f"Error creating bulk alerts: {str(e)}")

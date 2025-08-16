@@ -9,15 +9,7 @@ export default function Contact() {
     message: ''
   });
 
-  const [report, setReport] = useState({
-    name: '',
-    email: '',
-    province: '',
-    district: '',
-    location_details: '',
-    fire_date: '',
-    description: ''
-  });
+
 
   const [sent, setSent] = useState(false);
   const [reportSent, setReportSent] = useState(false);
@@ -27,9 +19,6 @@ export default function Contact() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleReportChange = (e) => {
-    setReport({ ...report, [e.target.name]: e.target.value });
-  };
 
   const handleContactSubmit = async () => {
     try {
@@ -41,23 +30,7 @@ export default function Contact() {
     }
   };
 
-  const handleReportSubmit = async () => {
-    try {
-      await axios.post('http://localhost:8000/reports', report);
-      setReportSent(true);
-      setReport({
-        name: '',
-        email: '',
-        province: '',
-        district: '',
-        location_details: '',
-        fire_date: '',
-        description: ''
-      });
-    } catch {
-      setError('Failed to submit fire report.');
-    }
-  };
+
 
   return (
     <div style={{ padding: '20px' }}>
@@ -77,34 +50,7 @@ export default function Contact() {
 
       <hr style={{ margin: '2rem 0' }} />
 
-      <h2>Report a Wildfire Incident</h2>
-      {reportSent && <p style={{ color: 'green' }}>🔥 Fire report has been submitted.</p>}
-
-      <input name="name" value={report.name} onChange={handleReportChange} placeholder="Your Name" /><br />
-      <input name="email" value={report.email} onChange={handleReportChange} placeholder="Email" /><br />
-      <input name="province" value={report.province} onChange={handleReportChange} placeholder="Province" /><br />
-      <input name="district" value={report.district} onChange={handleReportChange} placeholder="District" /><br />
-      <input
-        name="location_details"
-        value={report.location_details}
-        onChange={handleReportChange}
-        placeholder="Exact Location Details"
-      /><br />
-      <input
-        name="fire_date"
-        type="date"
-        value={report.fire_date}
-        onChange={handleReportChange}
-      /><br />
-      <textarea
-        name="description"
-        rows={4}
-        placeholder="Describe the fire situation"
-        value={report.description}
-        onChange={handleReportChange}
-      /><br />
-      <button onClick={handleReportSubmit}>Submit Fire Report</button>
-
+      
       {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
     </div>
   );
