@@ -13,6 +13,4 @@ passlib
 bcrypt<4.0.0
 scikit-learn==1.6.1
 jwt
-lucide-react 
-react-toastify
 #  pip install -r ../requirements.txt                                            

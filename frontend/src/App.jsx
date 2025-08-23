@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import "leaflet/dist/leaflet.css";
 
 import Navbar from "./components/Navbar.";
+import Footer from "./components/Footer";
 import RequireAdmin from "./components/RequireAdmin";
 
 import Home from "./pages/Home";
@@ -28,7 +29,7 @@ import Alerts from "./pages/Alerts";
 // Protected Route component to prevent logged-in users from accessing login
 const ProtectedLoginRoute = ({ children }) => {
     const { isAuthenticated, userRole } = useAuth();
-    
+
     if (isAuthenticated) {
         // Redirect to appropriate dashboard
         if (userRole === 'admin') {
@@ -37,18 +38,18 @@ const ProtectedLoginRoute = ({ children }) => {
             return <Navigate to="/user-dashboard" replace />;
         }
     }
-    
+
     return children;
 };
 
 // Protected Route component for authenticated users only
 const RequireAuth = ({ children }) => {
     const { isAuthenticated } = useAuth();
-    
+
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
     }
-    
+
     return children;
 };
 
@@ -56,7 +57,7 @@ function AppContent() {
     return (
         <div className="App">
             <Navbar />
-            <main className="max-w-5xl mx-auto mt-4 px-4">
+            <main className="min-h-screen">
                 <Routes>
                     {/* public routes */}
                     <Route path="/" element={<Home />} />
@@ -92,6 +93,7 @@ function AppContent() {
                     <Route path="/alerts" element={<Alerts />} />
                 </Routes>
             </main>
+            <Footer />
         </div>
     );
 }

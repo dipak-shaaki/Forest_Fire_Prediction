@@ -3,6 +3,8 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AlertsManagement() {
   const { logout } = useAuth();
@@ -54,14 +56,27 @@ export default function AlertsManagement() {
       await axios.put(`http://localhost:8000/alerts/${alertId}`, updatedData, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
-      setAlerts(alerts.map(alert => 
+
+      setAlerts(alerts.map(alert =>
         alert.id === alertId ? { ...alert, ...updatedData } : alert
       ));
       setEditingAlert(null);
     } catch (err) {
       console.error("Update alert error:", err);
       setError("Failed to update alert");
+    }
+  };
+
+  const handleCreateAlert = async (alertData) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.post("http://localhost:8000/alerts", alertData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Alert created!");
+      fetchAlerts(); // refresh list
+    } catch (err) {
+      toast.error("Failed to create alert");
     }
   };
 
@@ -165,7 +180,7 @@ export default function AlertsManagement() {
               style={{ height: "100%", width: "100%" }}
             >
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              
+
               {alerts.map((alert) => (
                 <Marker
                   key={alert.id}
@@ -176,13 +191,13 @@ export default function AlertsManagement() {
                       <h4 className="font-semibold text-lg">{alert.title}</h4>
                       <p className="text-sm text-gray-600 mb-2">{alert.district}</p>
                       <div className="flex gap-2 mb-2">
-                        <span 
+                        <span
                           className="px-2 py-1 rounded text-xs text-white"
                           style={{ backgroundColor: getRiskColor(alert.risk_level) }}
                         >
                           {alert.risk_level} Risk
                         </span>
-                        <span 
+                        <span
                           className="px-2 py-1 rounded text-xs text-white"
                           style={{ backgroundColor: getStatusColor(alert.status) }}
                         >
@@ -204,7 +219,7 @@ export default function AlertsManagement() {
         /* List View */
         <div className="bg-white shadow-lg rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">📋 All Alerts</h2>
-          
+
           {alerts.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-4xl mb-4">🚨</div>
@@ -288,13 +303,13 @@ export default function AlertsManagement() {
                           <p className="text-sm text-gray-600">{alert.district}</p>
                         </div>
                         <div className="flex gap-2">
-                          <span 
+                          <span
                             className="px-2 py-1 rounded text-sm font-medium text-white"
                             style={{ backgroundColor: getRiskColor(alert.risk_level) }}
                           >
                             {alert.risk_level} Risk
                           </span>
-                          <span 
+                          <span
                             className="px-2 py-1 rounded text-sm font-medium text-white"
                             style={{ backgroundColor: getStatusColor(alert.status) }}
                           >
@@ -302,21 +317,21 @@ export default function AlertsManagement() {
                           </span>
                         </div>
                       </div>
-                      
+
                       <p className="text-gray-700 mb-3">{alert.message}</p>
-                      
+
                       <div className="bg-gray-50 p-3 rounded mb-3">
                         <h4 className="font-medium text-sm mb-2">⚠️ Precautions:</h4>
                         <p className="text-sm text-gray-600">{alert.precautions}</p>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-3">
                         <div>🌡️ {alert.weather_data?.temperature}°C</div>
                         <div>💧 {alert.weather_data?.humidity}%</div>
                         <div>💨 {alert.weather_data?.wind_speed} km/h</div>
                         <div>📊 {(alert.probability * 100).toFixed(1)}% risk</div>
                       </div>
-                      
+
                       <div className="flex justify-between items-center">
                         <div className="text-xs text-gray-500">
                           Created: {formatDate(alert.created_at)}
@@ -344,6 +359,8 @@ export default function AlertsManagement() {
           )}
         </div>
       )}
+
+      <ToastContainer position="top-center" autoClose={2000} />
     </div>
   );
-} 
+}

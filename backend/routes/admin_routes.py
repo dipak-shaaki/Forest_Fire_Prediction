@@ -1,7 +1,7 @@
 import datetime
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
-from models.alert_model import FireAlert, UpdateAlert
+from models.alert_model import FireAlert, UpdateAlert, CreateAlertRequest
 from database.mongo import alerts_collection
 from bson import ObjectId
 import smtplib
@@ -503,7 +503,7 @@ async def scan_nepal_fire_risk(user=Depends(admin_required)):
 
 # Alert Management
 @router.post("/alerts")
-async def create_alert(alert_data: dict, user=Depends(admin_required)):
+async def create_alert(alert_data: CreateAlertRequest, user=Depends(admin_required)):
     """Create a new fire alert"""
     try:
         current_time = datetime.datetime.utcnow()
@@ -515,10 +515,10 @@ async def create_alert(alert_data: dict, user=Depends(admin_required)):
         
         alert_data["status"] = "active"
         
-        result = await alerts_collection.insert_one(alert_data)
+        result = await alerts_collection.insert_one(alert_data.dict())
         
         # Create response without ObjectId
-        response_data = alert_data.copy()
+        response_data = alert_data.dict()
         response_data["id"] = str(result.inserted_id)
         
         return response_data
@@ -550,12 +550,12 @@ async def get_public_alerts():
         raise HTTPException(500, detail=f"Error fetching alerts: {str(e)}")
 
 @router.put("/alerts/{alert_id}")
-async def update_alert(alert_id: str, alert_data: dict, user=Depends(admin_required)):
+async def update_alert(alert_id: str, alert_data: UpdateAlert, user=Depends(admin_required)):
     """Update an existing alert"""
     try:
         result = await alerts_collection.update_one(
             {"_id": ObjectId(alert_id)},
-            {"$set": alert_data}
+            {"$set": alert_data.dict(exclude_unset=True)}
         )
         if result.modified_count == 0:
             raise HTTPException(404, detail="Alert not found")

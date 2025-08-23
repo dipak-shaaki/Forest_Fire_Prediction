@@ -2,6 +2,14 @@ from pydantic import BaseModel
 from typing import Optional, Dict, Any
 from datetime import datetime
 
+
+
+def serialize(doc):
+    doc["id"] = str(doc["_id"])
+    del doc["_id"]
+    return doc
+
+
 class FireAlert(BaseModel):
     title: str
     message: str

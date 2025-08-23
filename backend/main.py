@@ -26,7 +26,8 @@ app = FastAPI()
 # Allow CORS for development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # or ["http://localhost:5173"] in production
+    #  allow_origins=["*"],  ["http://localhost:5173"] # or in production
+     allow_origins=["http://localhost:5173"],# or in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,11 +41,12 @@ app.include_router(auth_routes.router)
 app.include_router(contact_routes.router)
 app.include_router(fire_report_routes.router) 
 
-# Load model AND SCALER
+# It's recommended to load the model and scaler once at startup
+# and inject them as dependencies rather than loading them in multiple route files.
 model = None
 scaler = None # Initialize scaler to None
 try:
-    
+    # This loading logic is duplicated in admin_routes.py. Centralize it.
     model = joblib.load("./model/random_forest_final_model.pkl") # Load the Random Forest model
     if model is None:
         raise ValueError("Model is None, check the file path or model format.")
@@ -124,6 +126,8 @@ def predict_manual(data: ManualInput):
     fire_flag = int(proba >= 0.5)
 
     # Risk classification
+    # NOTE: This logic is inconsistent with the logic in admin_routes.py.
+    # This should be centralized in a single utility function.
     if proba >= 0.75:
         risk_level = "High"
     elif proba >= 0.40:

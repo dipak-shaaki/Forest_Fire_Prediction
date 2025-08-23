@@ -1,6 +1,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from auth.dependencies import admin_required # Assuming you have this dependency
 from passlib.hash import bcrypt
 from fastapi_jwt_auth import AuthJWT
 from database.mongo import db
@@ -53,9 +54,9 @@ async def admin_signup(payload: AdminLogin):
     await admins_collection.insert_one(admin)
     return {"msg": "Admin created"}
 
-# Debug endpoint to check user status (remove in production)
+# Debug endpoint to check user status (protected for admin use)
 @router.get("/debug/user/{email}")
-async def debug_user_status(email: str):
+async def debug_user_status(email: str, user_role: str = Depends(admin_required)):
     user = await db["users"].find_one({"email": email})
     if not user:
         return {"exists": False, "message": "User not found"}
@@ -214,7 +215,7 @@ async def login_user(data: UserLoginRequest, Authorize: AuthJWT = Depends()):
         # Create JWT token
         token = Authorize.create_access_token(subject=user["email"], user_claims={
             "role": user["role"],
-            "is_approved": True  # Always set to True since we don't need admin approval
+            "is_approved": user.get("is_approved", True) # Reflects actual status or defaults to True if not present
         })
         
         return {"access_token": token, "role": user["role"]}

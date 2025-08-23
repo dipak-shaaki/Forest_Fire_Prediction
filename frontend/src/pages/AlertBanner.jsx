@@ -30,7 +30,7 @@ export default function AlertBanner() {
     }}>
       {alerts.map((alert, idx) => (
         <div key={idx}>
-          🔥 {alert.title} — {alert.message}
+          {alert.title} — {alert.message}
         </div>
       ))}
     </div>
