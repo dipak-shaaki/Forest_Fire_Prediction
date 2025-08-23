@@ -46,159 +46,36 @@ function Home() {
     <div className="min-h-screen">
       <AlertBanner />
 
-      {/* Hero Section - Full Width */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Video/Image */}
+      {/* Hero Section - Clean Image */}
+      <section className="relative h-[500px] overflow-hidden">
+        {/* Background Image */}
         <div className="absolute inset-0 z-0">
-          {/* Option 1: Background Image */}
           <div
             className="w-full h-full bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
-            }}
+            style={{ backgroundImage: `url('/images/forest_fire.jpg')` }}
           />
-
-          {/* Option 2: Background Video (uncomment if you have a video) */}
-          {/* <video 
-            autoPlay 
-            muted 
-            loop 
-            className="w-full h-full object-cover"
-          >
-            <source src="/path-to-your-video.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video> */}
-        </div>
-
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-green-900/60 via-green-800/50 to-orange-800/60 z-10"></div>
-
-        {/* Hero Content */}
-        <div className="relative z-20 text-center text-white px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight animate-fade-in">
-              Nepal Forest Fire Watch
-            </h1>
-            <div className="text-5xl md:text-7xl mb-8 animate-bounce">
-              🌲🔥
-            </div>
-          </div>
-
-          <p className="text-xl md:text-3xl mb-12 max-w-4xl mx-auto leading-relaxed font-light animate-fade-in-delay">
-            Advanced forest fire monitoring and prediction system for Nepal.
-            <br />
-            <span className="text-green-300">Real-time satellite data, AI-powered predictions, and comprehensive analytics.</span>
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in-delay-2">
-            <Link
-              to="/live-map"
-              className="group bg-green-600 hover:bg-green-700 text-white px-10 py-5 rounded-xl text-xl font-semibold transition-all duration-300 transform hover:scale-110 shadow-2xl hover:shadow-green-500/25"
-            >
-              <span className="flex items-center">
-                <svg className="w-6 h-6 mr-3 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
-                </svg>
-                View Live Map
-              </span>
-            </Link>
-            <Link
-              to="/predict"
-              className="group bg-orange-600 hover:bg-orange-700 text-white px-10 py-5 rounded-xl text-xl font-semibold transition-all duration-300 transform hover:scale-110 shadow-2xl hover:shadow-orange-500/25"
-            >
-              <span className="flex items-center">
-                <svg className="w-6 h-6 mr-3 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                Predict Fire Risk
-              </span>
-            </Link>
-          </div>
-
-          {/* Scroll indicator */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-green-800 mb-4">
-              Comprehensive Fire Monitoring
+      {/* Forest Loss Article Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="border-t border-gray-300 pt-8">
+            <h2 className="text-3xl font-bold text-black mb-8">
+              Fires Are Emerging as a Top Driver of Forest Loss
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our platform provides everything you need to monitor, predict, and respond to forest fires in Nepal.
+
+            <p className="text-base text-black leading-relaxed mb-6">
+              As fires worsen — including in historically low-risk areas, like the tropics — they are becoming an increasingly prevalent driver of global forest loss.
             </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Live Map Feature */}
-            <div className="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-6 mx-auto">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-semibold text-green-800 mb-4 text-center">
-                Live Fire Map
-              </h3>
-              <p className="text-gray-700 text-center mb-6">
-                Real-time visualization of active fire hotspots across Nepal using NASA satellite data.
-              </p>
-              <Link
-                to="/live-map"
-                className="block text-center bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-              >
-                Explore Map
-              </Link>
-            </div>
+            <p className="text-base text-black leading-relaxed mb-6">
+              Fires accounted for almost half (44%) of all tree cover loss per year between 2023 and 2024. This marks a sharp rise from 2001-2022, when fires accounted for about one-quarter of annual tree cover loss on average.
+            </p>
 
-            {/* AI Prediction Feature */}
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center mb-6 mx-auto">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-semibold text-orange-800 mb-4 text-center">
-                AI Predictions
-              </h3>
-              <p className="text-gray-700 text-center mb-6">
-                Advanced machine learning models predict fire risk based on weather, terrain, and historical data.
-              </p>
-              <Link
-                to="/predict"
-                className="block text-center bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-              >
-                Try Prediction
-              </Link>
-            </div>
-
-            {/* Statistics Feature */}
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-6 mx-auto">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-semibold text-blue-800 mb-4 text-center">
-                Analytics & Stats
-              </h3>
-              <p className="text-gray-700 text-center mb-6">
-                Comprehensive statistics and trends analysis for informed decision-making.
-              </p>
-              <Link
-                to="/stats"
-                className="block text-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-              >
-                View Statistics
-              </Link>
-            </div>
+            <p className="text-base text-black leading-relaxed">
+              Coupled with other persistent drivers, like agriculture and logging, this is part of the reason forest loss has remained stubbornly high, despite countries' promises to combat it.
+            </p>
           </div>
         </div>
       </section>
