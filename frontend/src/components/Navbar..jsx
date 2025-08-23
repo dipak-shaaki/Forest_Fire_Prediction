@@ -26,21 +26,15 @@ function Navbar() {
     <nav className={`bg-white/95 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'shadow-lg bg-white/98' : 'shadow-sm'
       }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
+          <Link to="/" className="flex items-center group">
             <div className="relative">
               <img
-                src="/images/logo.png"
+                src="/images/logoo.png"
                 alt="ForestFire Watch Logo"
-                className="w-12 h-12 object-contain group-hover:scale-105 transition-all duration-300"
+                className="w-auto h-48 py-2 mb-6 my-2 object-contain group-hover:scale-105 transition-all duration-300"
               />
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent">
-                ForestFire Watch
-              </h1>
-              <p className="text-xs text-gray-500 -mt-1">Nepal</p>
             </div>
           </Link>
 
